@@ -1,3 +1,9 @@
+## Dev Env Setup
+
+run mysql server
+
+add library: mysql-connector-java-8.0.29.jar
+
 ## Getting Started
 
 Welcome to the VS Code Java world. Here is a guideline to help you get started to write Java code in Visual Studio Code.

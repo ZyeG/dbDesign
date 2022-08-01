@@ -1,0 +1,15 @@
+DROP TABLE IF EXISTS listing, user,booking;
+
+create table user(
+	uid INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    name varchar(25) NOT NULL,
+    email varchar(25) NOT NULL UNIQUE,
+    password varchar(25) NOT NULL,
+    birth varchar(10) NOT NULL,
+    occupation varchar(25),
+    SIN integer,
+    cardNumber integer,
+    cardExpirationDate varchar(5),
+    CVV integer,
+    isHost boolean NOT NULL, 
+    PRIMARY KEY (uid));

@@ -13,3 +13,35 @@ create table user(
     CVV integer,
     isHost boolean NOT NULL, 
     PRIMARY KEY (uid));
+
+create table listing(
+    lid INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    type varchar(10) NOT NULL,
+    latitude integer,
+    longitude integer,
+    city varchar(10) NOT NULL,
+    province varchar(2) NOT NULL,
+    postalCode varchar(7) NOT NULL,
+    address1 varchar(25) NOT NULL,
+    address2 varchar(25),
+    amenities varchar(50) DEFAULT 'NONE',
+    price integer NOT NULL,
+    checkin varchar(10) NOT NULL,
+    checkout varchar(10) NOT NULL,
+    CHECK (type IN ('fullHouse', 'apartment', 'room')),
+    PRIMARY KEY (lid));
+
+create table booking (
+    lid INT UNSIGNED NOT NULL,
+    r_uid INT UNSIGNED  NOT NULL,
+    h_uid INT UNSIGNED  NOT NULL,
+    commentByHost varchar(100),
+    commentByRenter varchar(100),
+    rateByHost integer,
+    rateByRenter integer,
+    canceledBy varchar(25),
+    isfinished boolean DEFAULT false,
+    PRIMARY KEY (lid, r_uid, h_uid),
+    FOREIGN KEY (lid) REFERENCES listing(lid),
+    FOREIGN KEY (r_uid) REFERENCES user(uid),
+    FOREIGN KEY (h_uid) REFERENCES user(uid));

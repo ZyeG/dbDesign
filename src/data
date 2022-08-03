@@ -1,0 +1,20 @@
+INSERT INTO user (email, name, password, isHost, birth) 
+VALUES ('h@test.com', 'h', 123, true, 1999-09-10);
+
+INSERT INTO user (email, name, password, isHost, birth) 
+VALUES ('r@test.com', 'r', 456, false, 1999-09-10);
+
+
+
+
+INSERT INTO listing (type, latitude, longitude, country, city, postalCode, address, amenities, price, availableFrom, availableTo, bookedWindows) 
+VALUES ('fullHouse', 48.44, -123.33, 'us', 'victoria', 'V8P1A1', '495 Dupplin Rd #2b', '["ac", "tv"]', 90,20220101,20220131,'[]');
+
+
+INSERT INTO listing (type, latitude, longitude, country, city, postalCode, address, amenities, price, availableFrom, availableTo, bookedWindows) 
+VALUES ("fullHouse", 43.78, -79.18, "ca", "toronto", "M1C3A8", "1295 Military Trail", '["wifi"]', 120, 20220301, 20220331, '[[20220305,20220309], [20220315,20220319]]');
+
+INSERT INTO listing (type, latitude, longitude, country, city, postalCode, address, amenities, price, availableFrom, availableTo, bookedWindows) 
+VALUES ('room', 43.78, -79.18, 'ca', 'toronto', 'M1C3A8', '1295 Military Trail', '["washer/dryer"]', 150, 20220501, 20220531, '[[20220505,20220509], [20220515,20220319], [20220525,20220529]]');
+
+

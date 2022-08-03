@@ -1,3 +1,5 @@
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.Scanner;
@@ -30,12 +32,22 @@ public class Parser {
         return Period.between(dob, curDate).getYears() >= 18;
     }
 
+    public boolean birthValid() {
+        SimpleDateFormat sdf = new SimpleDateFormat("YYYY-MM-DD");
+        try {
+            sdf.parse(birth);
+        } catch (ParseException e) {
+            return false;
+        }
+        return true;
+    }
+
     public void userRegister(Scanner scan){
         System.out.println("Enter Email format: name@domain.com");
         email = scan.nextLine();
         // check email format
         while (!emailValid()) {
-            System.out.print("invalid format, please re-enter, example: name@domain.com:");
+            System.out.println("invalid format, please re-enter, example: name@domain.com:");
             email = scan.nextLine();
         }
 
@@ -48,8 +60,8 @@ public class Parser {
         System.out.println("birth format: YYYY-MM-DD");
         birth = scan.nextLine();
         // check age
-        while (!ageValid()) {
-            System.out.print("invalid format, please re-enter, example: 2000-10-15");
+        while ((!birthValid()) || (!ageValid())) {
+            System.out.println("invalid format, please re-enter, example: 2000-10-15:");
             birth = scan.nextLine();
         }
 

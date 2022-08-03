@@ -6,7 +6,6 @@ public class MainMenu {
     public static void main(String[] args) {
         Handler handler = new Handler();
         
-        
         // global var
         Integer uid = -1;  // current user id
         boolean isHost = true; // if current user is renter
@@ -15,14 +14,9 @@ public class MainMenu {
         
         String line = "";
         
-        
-
         try {
             do {
                 printMainMenu();
-                while (!scan.hasNextLine()){
-                    System.out.println("a");
-                }
                 line = scan.nextLine();
                     if (line.length() == 1) {
                         switch (line.charAt(0)) {
@@ -46,7 +40,6 @@ public class MainMenu {
                                 else {
                                     System.out.println("Register fail");
                                 }
-                                // printMainMenu();
                                 break;
 
                             case '2':
@@ -66,7 +59,6 @@ public class MainMenu {
                                 } else {
                                     System.out.println("login fail");
                                 }
-                                // printMainMenu();
                                 break;
 
                             case '3':
@@ -75,8 +67,7 @@ public class MainMenu {
                                 } else if (handler.editProfile(scan, uid) == 1) {
                                     System.out.println("edit profile success");
                                 }
-                                System.out.println("edit profile fail");
-                                printMainMenu();
+                                else {System.out.println("edit profile fail");}
                                 break;
 
                             case '4':

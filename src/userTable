@@ -17,8 +17,8 @@ create table user(
 create table listing(
     lid INT UNSIGNED NOT NULL AUTO_INCREMENT,
     type varchar(10) NOT NULL,
-    latitude integer,
-    longitude integer,
+    latitude integer NOT NULL,
+    longitude integer NOT NULL,
     city varchar(10) NOT NULL,
     province varchar(2) NOT NULL,
     postalCode varchar(7) NOT NULL,
@@ -26,8 +26,8 @@ create table listing(
     address2 varchar(25),
     amenities varchar(50) DEFAULT 'NONE',
     price integer NOT NULL,
-    checkin varchar(10) NOT NULL,
-    checkout varchar(10) NOT NULL,
+    checkin integer NOT NULL,
+    checkout integer NOT NULL,
     CHECK (type IN ('fullHouse', 'apartment', 'room')),
     PRIMARY KEY (lid));
 

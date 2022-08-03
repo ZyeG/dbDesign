@@ -1,11 +1,12 @@
 
 
 import java.sql.*;
+import java.util.logging.Logger;
 
 public class DAO {
 
     public Connection conn;
-    public PreparedStatement ps;
+    // public PreparedStatement ps;
 
 	public DAO() {
         String url = "jdbc:mysql://127.0.0.1/mydb";
@@ -18,33 +19,7 @@ public class DAO {
 		}
 	}
 
-    /* user  */
-    // 
-    // public ResultSet userRegister(String email, String name, String password, 
-    // String addr, int birth, String occupation, int SIN, String payinfo, Boolean ishost) throws SQLException {
-    //     String query =  "INSERT INTO user (uid, email, name, password, addr, birth, occupation, SIN, payinfo, ishost)" + 
-    //     "VALUES(nextval('uid'), ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-    //     try {
-    //         PreparedStatement ps = this.conn.prepareStatement(query);
-    //         ps.setString(1, email);
-    //         ps.setString(2, name);
-    //         ps.setString(3, password);
-    //         ps.setString(4, addr);
-    //         ps.setInt(5, birth);
-    //         ps.setString(6, occupation);
-    //         ps.setInt(7, SIN);
-    //         ps.setString(8, payinfo);
-    //         ps.setBoolean(9, ishost);
-    //         return ps.executeQuery();
-    //     } catch (Exception e) {
-    //         e.printStackTrace();
-    //     }
-    //     return null;
-    // }
-
     public void postRegister(String email, String name, String password, Boolean ishost, String birth) throws SQLException {
-        // System.out.println("to print in dao");
-        // System.out.println(email);
         String query =  "INSERT INTO user (email, name, password, isHost, birth) VALUES(?, ?, ?, ?, ?) ";
         try {
             PreparedStatement ps = this.conn.prepareStatement(query);
@@ -55,8 +30,7 @@ public class DAO {
             ps.setString(5, birth);
             ps.execute();
         } catch (SQLException e) {
-            e.printStackTrace();
-            throw new SQLException();
+            throw e;
         }
     }
 
@@ -87,23 +61,24 @@ public class DAO {
         String query;
         try {
             if (occupation!= null) {
-                query = "UPDATE users SET occupation = ? WHERE uid = ? ";
+                query = "UPDATE user SET occupation = ? WHERE uid = ? ";
                 PreparedStatement ps = this.conn.prepareStatement(query);
                 ps.setString(1, occupation);
                 ps.setInt(2, uid);
-                this.ps.execute(query);
+                ps.executeUpdate();
             }
             if (SIN!= -1) {
-                query = "UPDATE users SET SIN = ? WHERE uid = ? ";
+                query = "UPDATE user SET SIN = ? WHERE uid = ? ";
                 PreparedStatement ps = this.conn.prepareStatement(query);
                 ps.setInt(1, SIN);
                 ps.setInt(2, uid);
-                this.ps.execute(query);
+                ps.executeUpdate();
             }
-        }
-        catch (Exception e){
+        } catch (Exception e) {
+            e.printStackTrace();
             throw new SQLException();
         }
+        
     }
 
     // TODO delete, cancel all booking not started yet, if renter delete all listings

@@ -1,6 +1,7 @@
 import java.io.EOFException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -19,25 +20,9 @@ public class Handler {
         this.parser = new Parser();
     }
 
-    // public Handler () {
-    //     this.dao = new DAO();
-    // }
-
-    // public static void userRegister(String email, String name, String password, 
-    // String addr, int birth, String occupation, int SIN, String payinfo, Boolean ishost) {
-        
-    //     try {
-    //         dao.userRegister(email, name, password, addr, birth, occupation, SIN, payinfo, ishost);
-    //     } catch (Exception e) {
-
-    //     }
-    // }
-
-    // 
-
     /* check input & call dao */
-    public Integer userRegister() {
-        parser.userRegister();
+    public Integer userRegister(Scanner scan) throws Exception {
+        parser.userRegister(scan);
 
         try {
             // post
@@ -48,14 +33,13 @@ public class Handler {
                 return rs.getInt("uid");
             }
             return -1;
-        } catch (SQLException e) {
-            e.printStackTrace(); // CHECK err, or queryExec err
-            return -1;
+        } catch (SQLException e) { // CHECK err, or queryExec err
+            throw e;
         }
     }
 
-    public Integer userLogin() {
-        parser.userLogin();
+    public Integer userLogin(Scanner scan) throws Exception {
+        parser.userLogin(scan);
         try {
             ResultSet rs = dao.getUserFromEmail(this.parser.email);
             if (!rs.next()){
@@ -68,12 +52,25 @@ public class Handler {
             }
             return rs.getInt("uid");
         } catch (SQLException e) {
-            e.printStackTrace(); // CHECK err, or queryExec err
-            return -1;
+            throw e;
         }
     }
 
-    public Integer editProfile(int uid) {
+    public boolean isHost(int uid) throws Exception {
+        boolean isHost = true;
+
+        try {
+            ResultSet rs = dao.getUserFromUid(uid);
+            if(rs.next()){
+                return rs.getBoolean("isHost");
+            }
+
+        } catch (Exception e) {
+            throw new Exception("getUserFromUid dao fail");
+        }
+        return isHost; 
+    }
+    public Integer editProfile(Scanner scan, int uid) {
         // sanity check
         try {
             ResultSet rs = dao.getUserFromUid(uid);
@@ -85,7 +82,7 @@ public class Handler {
         }
         
         // parser
-        parser.editProfile();
+        parser.editProfile(scan);
 
         // dao
         try {

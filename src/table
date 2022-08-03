@@ -16,6 +16,7 @@ create table user(
 
 create table listing(
     lid INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    h_uid INT UNSIGNED NOT NULL,
     type varchar(10) NOT NULL,
     latitude DECIMAL(5,2) NOT NULL,
     longitude DECIMAL(5,2) NOT NULL,
@@ -23,7 +24,7 @@ create table listing(
     city varchar(10) NOT NULL,
     postalCode varchar(7) NOT NULL,
     address varchar(25) NOT NULL,
-    amenities JSON,
+    amenities varchar(50),
     price integer NOT NULL,
     availableFrom integer NOT NULL,
     availableTo integer NOT NULL,
@@ -31,6 +32,7 @@ create table listing(
     CHECK (type IN ('fullHouse', 'apartment', 'room')),
     CHECK (country IN ('ca', 'us')),
     CHECK (city IN ('victoria', 'toronto', 'ny', 'portland')),
+    FOREIGN KEY (h_uid) REFERENCES user(uid);
     PRIMARY KEY (lid));
 
 create table booking (
@@ -49,3 +51,4 @@ create table booking (
     FOREIGN KEY (lid) REFERENCES listing(lid),
     FOREIGN KEY (r_uid) REFERENCES user(uid),
     FOREIGN KEY (h_uid) REFERENCES user(uid));
+

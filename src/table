@@ -32,7 +32,7 @@ create table listing(
     CHECK (type IN ('fullHouse', 'apartment', 'room')),
     CHECK (country IN ('ca', 'us')),
     CHECK (city IN ('victoria', 'toronto', 'ny', 'portland')),
-    FOREIGN KEY (h_uid) REFERENCES user(uid);
+    FOREIGN KEY (h_uid) REFERENCES user(uid),
     PRIMARY KEY (lid));
 
 create table booking (

@@ -36,6 +36,7 @@ public class utility {
         int booking_count = 0;
         try {
             while (rs.next()) {
+                System.out.printf("bid: %d, ", rs.getInt("bid"));
                 System.out.printf("lid: %d, ", rs.getInt("lid"));
                 System.out.printf("r_uid: %d, ", rs.getInt("r_uid"));
                 System.out.printf("h_uid: %d, ", rs.getInt("h_uid"));

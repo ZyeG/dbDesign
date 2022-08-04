@@ -9,7 +9,7 @@ create table user(
     occupation varchar(25),
     SIN integer,
     cardNumber integer,
-    cardExpirationDate varchar(5),
+    cardExpirationDate integer,
     CVV integer,
     isHost boolean NOT NULL, 
     PRIMARY KEY (uid));
@@ -36,18 +36,20 @@ create table listing(
     PRIMARY KEY (lid));
 
 create table booking (
+    bid INT UNSIGNED NOT NULL AUTO_INCREMENT,
     lid INT UNSIGNED NOT NULL,
     r_uid INT UNSIGNED  NOT NULL,
     h_uid INT UNSIGNED  NOT NULL,
     rentFrom integer NOT NULL,
     rentTo integer NOT NULL,
-    price interger NOT NULL,
+    price integer NOT NULL,
     commentByHost varchar(100),
     commentByRenter varchar(100),
     rateByHost integer,
     rateByRenter integer,
     canceledBy integer DEFAULT -1,
-    PRIMARY KEY (lid, r_uid, h_uid),
+    UNIQUE(lid, r_uid,h_uid,rentFrom),
+    PRIMARY KEY (bid),
     FOREIGN KEY (lid) REFERENCES listing(lid),
     FOREIGN KEY (r_uid) REFERENCES user(uid),
     FOREIGN KEY (h_uid) REFERENCES user(uid));

@@ -41,6 +41,7 @@ create table booking (
     h_uid INT UNSIGNED  NOT NULL,
     rentFrom integer NOT NULL,
     rentTo integer NOT NULL,
+    price interger NOT NULL,
     commentByHost varchar(100),
     commentByRenter varchar(100),
     rateByHost integer,

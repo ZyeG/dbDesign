@@ -10,8 +10,8 @@ public class MainMenu {
      // global var
      static Integer uid = -1;  // current user id
      static boolean isHost = true; // if current user is renter
-     static Integer lid = -1; // if user selects a listing, this tracks the lid
-     static Integer lid_rid = -1; // if user selects a listing, this tracks the renter of the listing
+    //  static Integer lid = -1; // if user selects a listing, this tracks the lid
+    //  static Integer lid_rid = -1; // if user selects a listing, this tracks the renter of the listing
 
     public static void main(String[] args) {
         String line = "";

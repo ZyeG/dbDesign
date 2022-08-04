@@ -138,15 +138,17 @@ public class Handler {
         if (isHost) {
             throw new Exception("only renters can make a booking");
         }
-        // 
+
         System.out.println("please enter the lid of the listing you want to book");
         int lid = Integer.parseInt(scan.nextLine());
         try {
              ResultSet rs = dao.getListingFromlid(lid);
              if(rs.next()){
                 int h_uid = rs.getInt("h_uid");
+                int prince = rs.getInt("price");
                 try {
-                    dao.bookListing(lid,uid,h_uid,parser.rentFrom, parser.rentTo);
+                    dao.bookListing(lid,uid,h_uid,parser.rentFrom, parser.rentTo,price);
+                    
                 }
                 catch (Exception e){
                     throw e;
@@ -156,6 +158,28 @@ public class Handler {
             throw e;
         }
     }
+
+
+    public void patchPayinfo (){
+        // patch user payinfo
+        try {
+            
+            int cardNumber = Integer.parseInt(scan.nextLine());
+            System.out.println("please enter cardnumber");
+            
+            System.out.println("please enter the lid of the listing you want to book");
+            dao.patchRenterPayinfo(uid);
+
+            
+    // cardNumber integer,
+    // cardExpirationDate varchar(5),
+    // CVV integer,
+
+    
+        }
+
+    }
+    
 
 
     public void rateBooking(Scanner scan, Integer uid, Boolean isHost) throws Exception {

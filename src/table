@@ -54,3 +54,4 @@ create table booking (
     FOREIGN KEY (r_uid) REFERENCES user(uid),
     FOREIGN KEY (h_uid) REFERENCES user(uid));
 
+

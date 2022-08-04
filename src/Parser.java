@@ -18,6 +18,9 @@ public class Parser {
     public String occupation=null;
     public int SIN=-1;
 
+    // used by search listing
+    public int rentFrom;
+    public int rentTo;
 
     public boolean emailValid() {
         String regex_email = "^(.+)@(.+)$";
@@ -27,22 +30,23 @@ public class Parser {
     }
 
     public boolean ageValid() {
-        LocalDate dob = LocalDate.parse(birth);
+        LocalDate dob = LocalDate.parse(String.valueOf(birth));
         LocalDate curDate = LocalDate.now();
         return Period.between(dob, curDate).getYears() >= 18;
     }
 
-    public boolean birthValid() {
-        SimpleDateFormat sdf = new SimpleDateFormat("YYYY-MM-DD");
+    // String.valueOf(i);
+    public boolean dateValid(String date) {
+        SimpleDateFormat sdf = new SimpleDateFormat("YYYYMMDD");
         try {
-            sdf.parse(birth);
+            sdf.parse(date);
         } catch (ParseException e) {
             return false;
         }
         return true;
     }
 
-    public void userRegister(Scanner scan){
+    public void userRegister(Scanner scan) throws Exception{
         System.out.println("Enter Email format: name@domain.com");
         email = scan.nextLine();
         // check email format
@@ -60,9 +64,14 @@ public class Parser {
         System.out.println("birth format: YYYY-MM-DD");
         birth = scan.nextLine();
         // check age
-        while ((!birthValid()) || (!ageValid())) {
-            System.out.println("invalid format, please re-enter, example: 2000-10-15:");
-            birth = scan.nextLine();
+        while ((!dateValid(birth)) || (!ageValid())) {
+            if (!ageValid()) {
+                throw new Exception("must be adult to register");
+            }
+            else {
+                System.out.println("invalid format, please re-enter, example: 20001015:");
+                birth = scan.nextLine();
+            }
         }
 
         System.out.println("are you host?(Y/N):");
@@ -75,7 +84,7 @@ public class Parser {
     }
 
     public void userLogin(Scanner scan) {
-        System.out.println("Enter Email format: name@domain.com");
+        System.out.println("Enter Email:");
         email = scan.nextLine();
         
         System.out.println("Password:");
@@ -90,6 +99,18 @@ public class Parser {
         System.out.println("SIN: (enter if wish not answer)");
         if (scan.hasNextLine()) {
             SIN = Integer.parseInt(scan.nextLine());
+        }
+    }
+
+    public void searchListing(Scanner scan) {
+        System.out.println("Enter rent starting date format:YYYYMMDD");
+        if (scan.hasNextLine()) {
+            rentFrom = Integer.parseInt(scan.nextLine());
+        }
+
+        System.out.println("Enter rent end date format:YYYYMMDD");
+        if (scan.hasNextLine()) {
+            rentTo = Integer.parseInt(scan.nextLine());
         }
     }
 }

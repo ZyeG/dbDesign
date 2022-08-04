@@ -1,186 +1,147 @@
-// import java.util.Scanner;
-
-// public class MainMenu {
-
-//     public static void main(String[] args) {
-//         Handler handler = new Handler();
-//         Integer uid = -1;
-
-//         String line = "";
-//         Scanner scanner = new Scanner(System.in);
-
-//         int i = 0;
-//         printMainMenu();
-
-//         try {
-//             do {
-//                 line = scanner.nextLine();
-
-//                 if (line.length() == 1) {
-//                     switch (line.charAt(0)) {
-//                         case '1':
-//                             uid = handler.userRegister();
-//                             if ( uid != -1) {
-//                                 System.out.println("Register success");
-//                                 break;
-//                             }
-//                             System.out.println("Register fail");
-//                             break;
-                           
-//                         case '2':
-//                             uid = handler.userLogin();
-//                             if (uid !=-1){
-//                                 System.out.println("login success");
-//                                 break;
-//                             }
-//                             System.out.println("login fail");
-//                             break;
-
-//                         case '3':
-//                             if (uid==-1) {
-//                                 System.out.println("please login/register first");
-//                                 break;
-//                             }
-//                             else if (handler.editProfile(uid)==1){
-//                                 System.out.println("edit profile success");
-//                                 break;
-//                             }
-//                             System.out.println("edit profile fail");
-//                             break;
-                            
-//                         case '4':
-//                             System.out.print("case4");
-//                             break;
-//                         case '5':
-//                             System.out.println("Exit");
-//                             break;
-//                         default:
-//                             System.out.println("Unknown action\n");
-//                             break;
-//                     }
-//                 } else {
-//                     System.out.println("Error: Invalid action\n");
-//                 }
-//             } while (line.charAt(0) != '5' || line.length() != 1);
-//         } catch (StringIndexOutOfBoundsException ex) {
-//             System.out.println("Empty input received. Exiting program...");
-//         }
-//         // uid = handler.userRegister();
-//         // if (uid != -1) {
-//         //     System.out.println("Register successfully");
-           
-//         // }
-//         // System.out.println("fail");
-//     }
-
-//     public static void printMainMenu()
-//     {
-//         System.out.print("\nWelcome to the Hotel Reservation Application\n" +
-//                 "--------------------------------------------\n" +
-//                 "1. user register\n" +
-//                 "2. user login\n" +
-//                 "3. user edit profile\n" +
-//                 "4. Admin\n" +
-//                 "5. Exit\n" +
-//                 "--------------------------------------------\n" +
-//                 "Please select a number for the menu option:\n");
-//     }
-    
-    
-// }
-
-
+import java.sql.ResultSet;
 import java.util.Scanner;
 
+import com.mysql.cj.jdbc.result.ResultSetMetaData;
+
 public class MainMenu {
+    static final Scanner scan = new Scanner(System.in);
+    static final Handler handler = new Handler();
+
+     // global var
+     static Integer uid = -1;  // current user id
+     static boolean isHost = true; // if current user is renter
+     static Integer lid = -1; // if user selects a listing, this tracks the lid
+     static Integer lid_rid = -1; // if user selects a listing, this tracks the renter of the listing
 
     public static void main(String[] args) {
-        Handler handler = new Handler();
-        Integer uid = -1;
-
         String line = "";
-        Scanner scanner = new Scanner(System.in);
-
-        printMainMenu();
-
         try {
             do {
-                line = "";
-                line = scanner.nextLine();
-                // 
-                System.out.println("here");
-
-                if (line.length() == 1) {
-                    switch (line.charAt(0)) {
-                        case '1':
-                            uid = handler.userRegister();
-                            if (uid != -1) {
-                                System.out.println("Register success\n");
-                                printMainMenu();
+                printMainMenu();
+                line = scan.nextLine();
+                    if (line.length() == 1) {
+                        switch (line.charAt(0)) {
+                            case '1':
+                                case1();
                                 break;
-                                
-                            }
-                            System.out.println("Register fail\n");
-                            printMainMenu();
-                            break;
 
-                        case '2':
-                            uid = handler.userLogin();
-                            if (uid != -1) {
-                                System.out.println("login success\n");
+                            case '2':
+                                case2();
                                 break;
-                            }
-                            System.out.println("login fail\n");
-                            break;
 
-                        case '3':
-                            if (uid == -1) {
-                                System.out.println("please login/register first\n");
+                            case '3':
+                                case3();
                                 break;
-                            } else if (handler.editProfile(uid) == 1) {
-                                System.out.println("edit profile success");
-                                break;
-                            }
-                            System.out.println("edit profile fail\n");
-                            break;
 
-                        case '4':
-                            System.out.print("case4");
-                            break;
-                        case '5':
-                            System.out.println("Exit");
-                            break;
-                        default:
-                            System.out.println("Unknown action\n");
-                            break;
+                            case '4':
+                                case4();
+                                break;
+
+                            case '5':
+                                case5();
+                                break;
+
+                            case '6':
+                                case6();
+                                break;
+                            
+                            case '7':
+                                // case7();
+                                break;
+                            
+                            case '8':
+                                System.out.println("Exit");
+                                break;
+                            
+                            default:
+                                System.out.println("Unknown action\n");
+                                break;
+                        }
+                    } else {
+                        System.out.println("Error: Invalid action\n");
                     }
-                } else {
-                    System.out.println("Error: Invalid action\n");
-                }
-            } while (line.charAt(0) != '5' || line.length() != 1);
+            } while (line.charAt(0) != '8' || line.length() != 1);
         } catch (StringIndexOutOfBoundsException ex) {
             System.out.println("Empty input received. Exiting program...");
         }
-        // uid = handler.userRegister();
-        // if (uid != -1) {
-        //     System.out.println("Register successfully");
-           
-        // }
-        // System.out.println("fail");
     }
 
-    public static void printMainMenu()
+    private static void printMainMenu()
     {
         System.out.print("\nWelcome to the Hotel Reservation Application\n" +
                 "--------------------------------------------\n" +
                 "1. user register\n" +
                 "2. user login\n" +
                 "3. user edit profile\n" +
-                "4. Admin\n" +
-                "5. Exit\n" +
+                "4. search listings and making bookings \n" +
+                "5. comment/rate on finished bookings \n" +
+                "6. cancel booking \n" +
                 "--------------------------------------------\n" +
                 "Please select a number for the menu option:\n");
     }
     
-    
+    private static void case1(){
+        try {
+            uid = handler.userRegister(scan);
+            isHost = handler.isHost(uid);
+            System.out.println("Register success");
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
+    private static void case2(){
+        try {
+            uid = handler.userLogin(scan);
+            isHost = handler.isHost(uid);
+            System.out.println("login success");
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
+    private static void case3(){
+        if (uid == -1) {
+            System.out.println("please login/register first");
+        } 
+        else {
+            try {
+                handler.editProfile(scan, uid);
+                System.out.println("edit profile success");
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+        }
+    }
+
+    private static void case4() {
+        // search (by time window) and display
+        try {
+            handler.searchListing(scan, uid, isHost);
+            System.out.println("book success");
+            
+        } catch(Exception e) {
+            System.out.println(e);
+        }
+    }
+
+    private static void case5() {
+        try {
+            handler.rateBooking(scan, uid, isHost);
+            System.out.println("comment/rate added success");
+        }
+        catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
+    private static void case6(){
+        try {
+            handler.cancelBooking(scan,uid);
+            System.out.println("cancel booking success");
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+
+    }
 }

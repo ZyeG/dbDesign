@@ -1,0 +1,36 @@
+INSERT INTO user (email, name, password, isHost, birth) 
+VALUES ('h1@test.com', 'h1', 1, true, 1999-09-10);
+
+INSERT INTO user (email, name, password, isHost, birth) 
+VALUES ('h2@test.com', 'h2', 2, true, 1999-09-11);
+
+INSERT INTO user (email, name, password, isHost, birth) 
+VALUES ('r1@test.com', 'r1', 3, false, 1999-09-12);
+
+INSERT INTO user (email, name, password, isHost, birth) 
+VALUES ('r2@test.com', 'r2', 4, false, 1999-09-13);
+
+
+
+INSERT INTO listing (h_uid, type, latitude, longitude, country, city, postalCode, address, amenities, price, availableFrom, availableTo, bookedWindows) 
+VALUES (1, 'fullHouse', 48.44, -123.33, 'us', 'victoria', 'V8P1A1', '495 Dupplin Rd #2b', 'ac, tv', 90,20220101,20220131,'[]');
+
+
+INSERT INTO listing (h_uid, type, latitude, longitude, country, city, postalCode, address, amenities, price, availableFrom, availableTo, bookedWindows) 
+VALUES (1, "fullHouse", 43.78, -79.18, "ca", "toronto", "M1C3A8", "1295 Military Trail", 'wifi', 120, 20220801, 20220831, '[[20220805,20220809], [20220815,20220819]]');
+
+INSERT INTO listing (h_uid, type, latitude, longitude, country, city, postalCode, address, amenities, price, availableFrom, availableTo, bookedWindows) 
+VALUES (2, 'room', 43.78, -79.18, 'ca', 'toronto', 'M1C3A8', '1295 Military Trail', 'washer/dryer', 150, 20220501, 20220531, '[[20220505,20220509], [20220515,20220319], [20220525,20220529]]');
+
+INSERT INTO listing (h_uid, type, latitude, longitude, country, city, postalCode, address, amenities, price, availableFrom, availableTo, bookedWindows) 
+VALUES (2, 'room', 48.44, -123.33, 'ca', 'victoria', 'V8R2Y5', '1500 Holly St', 'pool', 150, 20220101, 20220131, '[[20220105,20220509]]');
+
+
+
+
+INSERT INTO booking (lid, r_uid, h_uid,rentFrom,rentTo) 
+VALUES (1,3,1,20220103,20220109);
+
+INSERT INTO booking (lid, r_uid, h_uid,rentFrom,rentTo) 
+VALUES (2,3,1,20220820,20220824);
+

@@ -1,4 +1,6 @@
 import java.sql.*;
+import java.util.List;
+import java.util.Scanner;
 
 public class DAO {
 
@@ -132,8 +134,8 @@ public class DAO {
     }
 
     /* booking */
-    public void bookListing(int lid,int uid,int h_uid,int rentFrom, int rentTo) throws SQLException {
-        String query =  "INSERT INTO booking (lid, r_uid, h_uid, rentFrom, rentTo) VALUES(?, ?, ?, ?, ?)  ";
+    public void bookListing(int lid,int uid,int h_uid,int rentFrom, int rentTo, int price) throws SQLException {
+        String query =  "INSERT INTO booking (lid, r_uid, h_uid, rentFrom, rentTo, price) VALUES(?, ?, ?, ?, ?, ?)  ";
         try {
             PreparedStatement ps = this.conn.prepareStatement(query);
             ps.setInt(1, lid);
@@ -141,8 +143,24 @@ public class DAO {
             ps.setInt(3, h_uid);
             ps.setInt(4, rentFrom);
             ps.setInt(5, rentTo);
+            ps.setInt(6, price);
             ps.execute();
         } catch (SQLException e) {
+            throw e;
+        }
+    }
+
+    public void updateBookedWindows(int lid, int rentFrom, int rentTo) throws SQLException {
+        String query =  "UPDATE listing SET bookedWindows = JSON_ARRAY_APPEND((select * from (SELECT bookedWindows FROM listing WHERE lid = ?)tblTmp), '$', (SELECT JSON_ARRAY (?,?))) WHERE lid = ?";
+        try {
+            PreparedStatement ps = this.conn.prepareStatement(query);
+            ps.setInt(1, lid);
+            ps.setInt(2, rentFrom);
+            ps.setInt(3, rentTo);
+            ps.setInt(4, lid);
+            ps.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
             throw e;
         }
     }
@@ -159,13 +177,11 @@ public class DAO {
         }
     }
 
-    public ResultSet getBookingFromKey (int lid, int r_uid, int h_uid) throws Exception {
-        String query =  "SELECT * FROM booking WHERE lid = ? AND r_uid = ? AND h_uid=? ";
+    public ResultSet getBookingFromBid (int bid) throws Exception {
+        String query =  "SELECT * FROM booking WHERE bid = ? ";
         try {
             PreparedStatement ps = this.conn.prepareStatement(query);
-            ps.setInt(1, lid);
-            ps.setInt(2, r_uid);
-            ps.setInt(3, h_uid);
+            ps.setInt(1, bid);
             return ps.executeQuery();
         } catch (SQLException e){
             e.printStackTrace();
@@ -173,16 +189,14 @@ public class DAO {
         }
     }
 
-    public void patchBookingByHost(int lid, int r_uid, int h_uid, String comment, int rate) throws SQLException {
+    public void patchBookingByHost(int bid, String comment, int rate) throws SQLException {
         String query;
         try {
-            query = "UPDATE booking SET commentByHost = ? , rateByHost = ? WHERE lid = ? AND r_uid = ? AND h_uid=? ";
+            query = "UPDATE booking SET commentByHost = ? , rateByHost = ? WHERE bid = ?";
             PreparedStatement ps = this.conn.prepareStatement(query);
             ps.setString(1, comment);
             ps.setInt(2, rate);
-            ps.setInt(3, lid);
-            ps.setInt(4, r_uid);
-            ps.setInt(5, h_uid);
+            ps.setInt(3, bid);
             ps.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
@@ -191,16 +205,14 @@ public class DAO {
 
     }
 
-    public void patchBookingByRenter(int lid, int r_uid, int h_uid, String comment, int rate) throws SQLException {
+    public void patchBookingByRenter(int bid, String comment, int rate) throws SQLException {
         String query;
         try {
             query = "UPDATE booking SET commentByRenter = ? , rateByRenter = ? WHERE lid = ? AND r_uid = ? AND h_uid=? ";
             PreparedStatement ps = this.conn.prepareStatement(query);
             ps.setString(1, comment);
             ps.setInt(2, rate);
-            ps.setInt(3, lid);
-            ps.setInt(4, r_uid);
-            ps.setInt(5, h_uid);
+            ps.setInt(3, bid);
             ps.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
@@ -208,15 +220,13 @@ public class DAO {
         }
     }
 
-    public void cancelBooking(int canceledBy_uid, int lid, int r_uid, int h_uid) throws SQLException {
+    public void cancelBooking(int canceledBy_uid, int bid) throws SQLException {
         String query;
         try {
-            query = "UPDATE booking SET canceledBy = ? WHERE lid = ? AND r_uid = ? AND h_uid=? ";
+            query = "UPDATE booking SET canceledBy = ? WHERE bid = ? ";
             PreparedStatement ps = this.conn.prepareStatement(query);
             ps.setInt(1, canceledBy_uid);
-            ps.setInt(2, lid);
-            ps.setInt(3, r_uid);
-            ps.setInt(4, h_uid);
+            ps.setInt(2, bid);
             ps.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
@@ -224,6 +234,111 @@ public class DAO {
         }
     }
 
+    public void patchRenterPayinfo(int uid, int cardNumber, int cardExpirationDate, int CVV) throws SQLException {
+        String query;
+        try {
+            query = "UPDATE user SET cardNumber = ?, cardExpirationDate =?, CVV = ? WHERE uid = ? ";
+            PreparedStatement ps = this.conn.prepareStatement(query);
+            ps.setInt(1, cardNumber);
+            ps.setInt(2, cardExpirationDate);
+            ps.setInt(3, CVV);
+            ps.setInt(4, uid);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new SQLException();
+        }
+    }
+
+    public void searchListingMultiFilter(Scanner scan, List<String> filters_parsed) {
+        // distance,city, postalCode, address, amenities, price, time, separate by ,\nexample: city,priceRange,timeWindow
+        
+        double latitude = -1.00;
+        double longitude = -1.00;
+        double distance = -1.00;
+        String city = null;
+        String postalCode = null;
+        String address = null;
+        String amenities = null;
+        int price_upper = -1;
+        int price_lower = -1;
+        int timeFrom = -1;
+        int timeTo = -1;
+
+
+        if (filters_parsed.contains("distance")){
+            System.out.println("latitude");
+            latitude = Double.parseDouble(scan.nextLine()); 
+            System.out.println("longitude");
+            longitude = Double.parseDouble(scan.nextLine());
+            System.out.println("distance(in meters)");
+            distance = Double.parseDouble(scan.nextLine());
+        }
+        if (filters_parsed.contains("city")) {
+            System.out.println("city");
+            city = scan.nextLine();
+        }
+        if (filters_parsed.contains("postalCode")) {
+            System.out.println("postalCode");
+            postalCode = scan.nextLine();
+        }
+        if (filters_parsed.contains("address")) {
+            System.out.println("address");
+            address = scan.nextLine();
+        }
+        if (filters_parsed.contains("amenities")) {
+            System.out.println("amenities");
+            amenities = scan.nextLine();
+            String[] amenities_parsed = amenities.replace("\n", "").split(",");
+            int ameniteis_count = amenities_parsed.length;
+        }
+        if (filters_parsed.contains("price")) {
+            System.out.println("price_upper");
+            price_upper = Integer.parseInt(scan.nextLine());
+            System.out.println("price_lower");
+            price_lower = Integer.parseInt(scan.nextLine());
+        }
+        if (filters_parsed.contains("time")){
+            System.out.println("timeFrom");
+            timeFrom = Integer.parseInt(scan.nextLine());
+            System.out.println("timeTo");
+            timeTo = Integer.parseInt(scan.nextLine());
+        }
+
+        String query;
+        try {
+            query = "UPDATE user SET cardNumber = ?, cardExpirationDate =?, CVV = ? WHERE uid = ? ";
+            PreparedStatement ps = this.conn.prepareStatement(query);
+            ps.setInt(1, cardNumber);
+            ps.setInt(2, cardExpirationDate);
+            ps.setInt(3, CVV);
+            ps.setInt(4, uid);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new SQLException();
+        }
+
+
+
+
+
+
+    //     lid INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    // h_uid INT UNSIGNED NOT NULL,
+    // type varchar(10) NOT NULL,
+    // latitude DECIMAL(5,2) NOT NULL,
+    // longitude DECIMAL(5,2) NOT NULL,
+    // country varchar(10) NOT NULL,
+    // city varchar(10) NOT NULL,
+    // postalCode varchar(7) NOT NULL,
+    // address varchar(25) NOT NULL,
+    // amenities varchar(50),
+    // price integer NOT NULL,
+    // availableFrom integer NOT NULL,
+    // availableTo integer NOT NULL,
+    // bookedWindows JSON,
+    }
     
 
 }

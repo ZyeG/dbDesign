@@ -1,7 +1,4 @@
-import java.sql.ResultSet;
 import java.util.Scanner;
-
-import com.mysql.cj.jdbc.result.ResultSetMetaData;
 
 public class MainMenu {
     static final Scanner scan = new Scanner(System.in);
@@ -10,8 +7,8 @@ public class MainMenu {
      // global var
      static Integer uid = -1;  // current user id
      static boolean isHost = true; // if current user is renter
-     static Integer lid = -1; // if user selects a listing, this tracks the lid
-     static Integer lid_rid = -1; // if user selects a listing, this tracks the renter of the listing
+    //  static Integer lid = -1; // if user selects a listing, this tracks the lid
+    //  static Integer lid_rid = -1; // if user selects a listing, this tracks the renter of the listing
 
     public static void main(String[] args) {
         String line = "";
@@ -46,7 +43,7 @@ public class MainMenu {
                                 break;
                             
                             case '7':
-                                // case7();
+                                case7();
                                 break;
                             
                             case '8':
@@ -76,6 +73,7 @@ public class MainMenu {
                 "4. search listings and making bookings \n" +
                 "5. comment/rate on finished bookings \n" +
                 "6. cancel booking \n" +
+                "7. search listings with multiple filters \n" +
                 "--------------------------------------------\n" +
                 "Please select a number for the menu option:\n");
     }
@@ -119,6 +117,8 @@ public class MainMenu {
         try {
             handler.searchListing(scan, uid, isHost);
             System.out.println("book success");
+            handler.patchUserPayinfo(scan, uid);
+            System.out.println("payinfo stored success");
             
         } catch(Exception e) {
             System.out.println(e);
@@ -140,6 +140,15 @@ public class MainMenu {
             handler.cancelBooking(scan,uid);
             System.out.println("cancel booking success");
         } catch (Exception e) {
+            System.out.println(e);
+        }
+
+    }
+
+    private static void case7() {
+        try {
+            handler.searchListingMultiFilter(scan);
+        } catch (Exception e){
             System.out.println(e);
         }
 

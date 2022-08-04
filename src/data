@@ -25,4 +25,3 @@ VALUES (2, 'room', 43.78, -79.18, 'ca', 'toronto', 'M1C3A8', '1295 Military Trai
 INSERT INTO listing (h_uid, type, latitude, longitude, country, city, postalCode, address, amenities, price, availableFrom, availableTo, bookedWindows) 
 VALUES (2, 'room', 48.44, -123.33, 'ca', 'victoria', 'V8R2Y5', '1500 Holly St', '["pool"]', 150, 20220101, 20220131, '[[20220105,20220109]]');
 
-

@@ -1,14 +1,11 @@
-import java.io.EOFException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import com.mysql.cj.protocol.Resultset;
 
 import java.time.LocalDate;  
-import java.time.Period;
 import java.time.format.DateTimeFormatter;  
 
 /* check input validity, things cannot be checked by sql CHECK */
@@ -48,12 +45,10 @@ public class Handler {
         try {
             ResultSet rs = dao.getUserFromEmail(this.parser.email);
             if (!rs.next()){
-                System.out.println("login failed, email not found");
-                return -1;
+                throw new Exception("login failed, email not found");
             }
             else if (!this.parser.password.equals(rs.getString("password"))){
-                System.out.println("login failed, password not match");
-                return -1;
+                throw new Exception("login failed, password not match");
             }
             return rs.getInt("uid");
         } catch (SQLException e) {
@@ -138,15 +133,19 @@ public class Handler {
         if (isHost) {
             throw new Exception("only renters can make a booking");
         }
-        // 
+
         System.out.println("please enter the lid of the listing you want to book");
         int lid = Integer.parseInt(scan.nextLine());
         try {
              ResultSet rs = dao.getListingFromlid(lid);
              if(rs.next()){
                 int h_uid = rs.getInt("h_uid");
+                int price = rs.getInt("price");
                 try {
-                    dao.bookListing(lid,uid,h_uid,parser.rentFrom, parser.rentTo);
+                    // insert booking
+                    dao.bookListing(lid,uid,h_uid,parser.rentFrom, parser.rentTo, price);
+                    // update listing.bookedwindows
+                    dao.updateBookedWindows(lid, parser.rentFrom, parser.rentTo);
                 }
                 catch (Exception e){
                     throw e;
@@ -156,6 +155,23 @@ public class Handler {
             throw e;
         }
     }
+
+    
+    public void patchUserPayinfo(Scanner scan, int uid) throws Exception{
+        // patch user payinfo
+        try {
+            System.out.println("please enter cardnumber");
+            int cardNumber = Integer.parseInt(scan.nextLine());
+            System.out.println("please enter cardExpirationDate format yymm");
+            int cardExpirationDate = Integer.parseInt(scan.nextLine());
+            System.out.println("please enter CVV");
+            int CVV = Integer.parseInt(scan.nextLine());
+            dao.patchRenterPayinfo(uid,cardNumber,cardExpirationDate,CVV);
+        } catch (Exception e){
+            throw e;
+        }
+    }
+    
 
 
     public void rateBooking(Scanner scan, Integer uid, Boolean isHost) throws Exception {
@@ -179,25 +195,21 @@ public class Handler {
                     throw new Exception("you have no bookings to rate");
                 }
                 else {
-                    System.out.println("please enter lid of the booking you want to rate:");
-                    int lid = Integer.parseInt(scan.nextLine());
-                    System.out.println("please enter r_uid of the booking you want to rate:");
-                    int r_uid = Integer.parseInt(scan.nextLine());
-                    System.out.println("please enter h_uid of the booking you want to rate:");
-                    int h_uid = Integer.parseInt(scan.nextLine());
+                    System.out.println("please enter bid of the booking you want to rate:");
+                    int bid = Integer.parseInt(scan.nextLine());
                     System.out.println("please enter your comments(<100 characters)");
                     String comment = scan.nextLine();
                     System.out.println("please enter your rate(1-5, 5 very satisfied)");
                     int rate = Integer.parseInt(scan.nextLine());
                     try {
-                        ResultSet rs2 = dao.getBookingFromKey(lid, r_uid, h_uid);
+                        ResultSet rs2 = dao.getBookingFromBid(bid);
                         if(rs2.next()){
                             if(rs2.getInt("rentTo")>todayDate_int){
                                 throw new Exception("cannot comment/rate unfinished bookings");
                             }
                             else {
                                 try {
-                                    dao.patchBookingByHost(lid, r_uid, h_uid, comment, rate);
+                                    dao.patchBookingByHost(bid, comment, rate);
                                 } catch(Exception e){
                                     throw e;
                                 }
@@ -223,25 +235,21 @@ public class Handler {
                     throw new Exception("you have no bookings to rate");
                 }
                 else {
-                    System.out.println("please enter lid of the booking you want to rate:");
-                    int lid = Integer.parseInt(scan.nextLine());
-                    System.out.println("please enter r_uid of the booking you want to rate:");
-                    int r_uid = Integer.parseInt(scan.nextLine());
-                    System.out.println("please enter h_uid of the booking you want to rate:");
-                    int h_uid = Integer.parseInt(scan.nextLine());
+                    System.out.println("please enter bid of the booking you want to rate:");
+                    int bid = Integer.parseInt(scan.nextLine());
                     System.out.println("please enter your comments(<100 characters)");
                     String comment = scan.nextLine();
                     System.out.println("please enter your rate(1-5, 5 very satisfied)");
                     int rate = Integer.parseInt(scan.nextLine());
                     try {
-                        ResultSet rs2 = dao.getBookingFromKey(lid, r_uid, h_uid);
+                        ResultSet rs2 = dao.getBookingFromBid(bid);
                         if(rs2.next()){
                             if(rs2.getInt("rentTo")>todayDate_int){
                                 throw new Exception("cannot comment/rate unfinished bookings");
                             }
                             else {
                                 try {
-                                    dao.patchBookingByRenter(lid, r_uid, h_uid, comment, rate);
+                                    dao.patchBookingByRenter(bid, comment, rate);
                                 } catch(Exception e){
                                     throw e;
                                 }
@@ -281,14 +289,10 @@ public class Handler {
                 throw new Exception("you have no bookings to cancel");
             }
             else {
-                System.out.println("please enter lid of the booking you want to cancel:");
-                int lid = Integer.parseInt(scan.nextLine());
-                System.out.println("please enter r_uid of the booking you want to cancel:");
-                int r_uid = Integer.parseInt(scan.nextLine());
-                System.out.println("please enter h_uid of the booking you want to cancel:");
-                int h_uid = Integer.parseInt(scan.nextLine());
+                System.out.println("please enter bid of the booking you want to cancel:");
+                int bid = Integer.parseInt(scan.nextLine());
                 try {
-                    ResultSet rs2 = dao.getBookingFromKey(lid, r_uid, h_uid);
+                    ResultSet rs2 = dao.getBookingFromBid(bid);
                     if(rs2.next()){
                         if((rs2.getInt("rentTo")>todayDate_int) && (rs2.getInt("rentFrom")<todayDate_int) ){
                             throw new Exception("cannot cancel ungoing bookings");
@@ -298,7 +302,7 @@ public class Handler {
                         }
                         else {
                             try {
-                                dao.cancelBooking(canceledBy_uid, lid, r_uid, h_uid);
+                                dao.cancelBooking(canceledBy_uid, bid);
                             } catch(Exception e){
                                 throw e;
                             }
@@ -313,6 +317,23 @@ public class Handler {
             throw e;
         }
     }
+
+
+
+    public void searchListingMultiFilter(Scanner scan) throws Exception {
+        System.out.println("set filters, select from distance,city, postalCode, address, amenities, price, time, separate by ,\nexample: city,priceRange,timeWindow");
+        String filters = scan.nextLine();
+        List<String> filters_parsed = Arrays.asList(filters.replace("\n", "").split(","));
+        try {
+            // get listing
+            dao.searchListingMultiFilter(scan, filters_parsed);
+            // print listing
+        } catch (Exception e) {
+            throw e;
+        }
+        
+    }
+
 
 
 

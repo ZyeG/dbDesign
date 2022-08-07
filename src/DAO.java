@@ -133,6 +133,61 @@ public class DAO {
         }
     }
 
+    public ResultSet getListingFromUid(int h_uid) throws SQLException {
+        String query = "SELECT * FROM listing WHERE h_uid = ?";
+
+        try {
+            PreparedStatement ps = this.conn.prepareStatement(query);
+            ps.setInt(1, h_uid);
+            return ps.executeQuery();
+        } catch (SQLException e){
+            throw new SQLException();
+        }
+    }
+
+    public void postListing(int h_uid, String type, double latitude, double longitude, String country, String city, 
+            String postalCode, String address, int price, int availableFrom, int availableTo, String amenities) throws SQLException {
+        String query =  "INSERT INTO user (h_uid, type, latitude, longitude, country, city, postalCode, address, price, availableFrom, availableTo, amenities) " + 
+                        "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ";
+        try {
+            PreparedStatement ps = this.conn.prepareStatement(query);
+            ps.setInt(1, h_uid);
+            ps.setString(2, type);
+            ps.setDouble(3, latitude);
+            ps.setDouble(4, longitude);
+            ps.setString(5, country);
+            ps.setString(6, city);
+            ps.setString(7, postalCode);
+            ps.setString(8, address);
+            ps.setInt(9, price);
+            ps.setInt(10, availableFrom);
+            ps.setInt(11, availableTo);
+            if(amenities == "") {
+                ps.setNull(12, Types.VARCHAR);   
+            } else {
+                ps.setString(12, amenities);
+            }
+            ps.execute();
+        } catch (SQLException e) {
+            throw e;
+        }
+    }
+
+    public void patchListing() {
+        // TODO: update listing
+    }
+
+    public void deleteListing(int lid) throws SQLException {
+        String query = "DELETE FROM listing WHERE lid = ?";
+
+        try {
+            PreparedStatement ps = this.conn.prepareStatement(query);
+            ps.setInt(1, lid);
+            ps.executeQuery();
+        } catch (SQLException e){
+            throw new SQLException();
+        }
+    }
     /* booking */
     public void bookListing(int lid,int uid,int h_uid,int rentFrom, int rentTo, int price) throws SQLException {
         String query =  "INSERT INTO booking (lid, r_uid, h_uid, rentFrom, rentTo, price) VALUES(?, ?, ?, ?, ?, ?)  ";
@@ -309,14 +364,14 @@ public class DAO {
         try {
             query = "UPDATE user SET cardNumber = ?, cardExpirationDate =?, CVV = ? WHERE uid = ? ";
             PreparedStatement ps = this.conn.prepareStatement(query);
-            ps.setInt(1, cardNumber);
-            ps.setInt(2, cardExpirationDate);
-            ps.setInt(3, CVV);
-            ps.setInt(4, uid);
+            // ps.setInt(1, cardNumber);
+            // ps.setInt(2, cardExpirationDate);
+            // ps.setInt(3, CVV);
+            // ps.setInt(4, uid);
             ps.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
-            throw new SQLException();
+            //throw new SQLException();
         }
 
 

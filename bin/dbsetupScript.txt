@@ -1,0 +1,90 @@
+DROP TABLE IF EXISTS listing, user,booking;
+
+CREATE SEQUENCE uid
+start with 1
+increment by 1
+minvalue 1
+maxvalue 1000
+cycle;
+
+CREATE SEQUENCE lid
+start with 1
+increment by 1
+minvalue 1
+maxvalue 1000
+cycle;
+
+create table listing(
+    lid varchar(25) NOT NULL,
+    type varchar(25) NOT NULL,
+    latitude integer,
+    longitude integer,
+    city varchar(10) NOT NULL,
+    province varchar(2) NOT NULL,
+    postalCode varchar(7) NOT NULL,
+    address1 varchar(25) NOT NULL,
+    address2 varchar(25) NOT NULL,
+    amenities varchar(50) DEFAULT 'NONE'
+    price integer NOT NULL,
+    checkin varchar(10),
+    checkout varchar(10),
+    CHECK (type IN ('full house', 'apartment', 'room')),
+    CHECK ()
+    PRIMARY KEY (lid));
+
+    lid varchar(25) NOT NULL,
+    type varchar(25) NOT NULL afull house, apartment, room
+    latitude integer,
+    longitude integer,
+    city varchar(10) NOT NULL,
+    province varchar(2) NOT NULL,
+    postalCode varchar(7) NOT NULL,
+    address1 varchar(25) NOT NULL,
+    address2 varchar(25) NOT NULL,
+    amenities varchar(50) DEFAULT 'NONE', pool, wifi, tv, washer/dryer, air conditioning, smoke alarm, parking, workspace 
+    price integer NOT NULL, per night
+    checkin varchar(10), MM/dd/yyyy
+    checkout varchar(10), MM/dd/yyyy
+    PRIMARY KEY (lid));
+    CHECK (numberGuest>0)
+    CHECK (numberBed>0)
+    CHECK (numberBathroom>0)
+
+create table user(
+	uid varchar(25) NOT NULL,
+    name varchar(25) NOT NULL,
+    email varchar(25) NOT NULL UNIQUE,
+    password varchar(25) NOT NULL,
+    birth integer NOT NULL,
+    occupation varchar(25),
+    SIN interger,
+    cardNumber integer, 16+3digits
+    cardExpirationDate varchar(5), MM/YY
+    CVV integer,
+    ishost boolean NOT NULL, 
+    PRIMARY KEY (uid));
+
+create table booking (
+    lid varchar(25) NOT NULL,
+    r_uid varchar(25) NOT NULL,
+    h_uid varchar(25) NOT NULL,
+    commentByHost varchar(100),
+    commentByRenter varchar(100),
+    rateByHost integer,
+    rateByRenter integer,
+    canceledBy varchar(25),
+    isfinished boolean NOT NULL;
+    PRIMARY KEY (lid, r_uid, h_uid),
+    foreign key (r_uid, h_uid) references user(uid, uid));
+
+DELIMITER |
+CREATE TRIGGER Took_trigger BEFORE INSERT ON Took
+FOR EACH ROW BEGIN
+DECLARE msg varchar(255);
+IF NEW.grade > 100 OR  NEW.grade < 0 THEN
+SET msg = 'Constraints violated!';
+SIGNAL sqlstate '45000' set message_text = msg;
+END IF;
+END
+|
+DELIMITER ;

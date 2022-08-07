@@ -1,0 +1,87 @@
+DELIMITER |
+CREATE TRIGGER Took_trigger BEFORE INSERT ON Took
+FOR EACH ROW BEGIN
+DECLARE msg varchar(255);
+IF NEW.grade > 100 OR  NEW.grade < 0 THEN
+SET msg = 'Constraints violated!';
+SIGNAL sqlstate '45000' set message_text = msg;
+END IF;
+END
+|
+DELIMITER ;
+
+DROP FUNCTION [ IF EXISTS ] function_name;
+
+/* called for each lisitng row, loop through its field bookedWindows(type json array), check not overlapped for any window*/
+CREATE FUNCTION isAvailable (bookedWindows JSON, rentFrom Integer, rentTo Integer)
+RETURNS BOOLEAN
+BEGIN
+
+    DECLARE i INT DEFAULT 0;
+    DECLARE isAvailable true;
+ 
+    WHILE i < JSON_LENGTH(bookedWindows) DO
+       SELECT (JSON_EXTRACT(JSON_EXTRACT(bookedWindows,CONCAT('$[',i,']')), '$[0]') > rentTo) &&
+        (JSON_EXTRACT(JSON_EXTRACT(bookedWindows,CONCAT('$[',i,']')), '$[1]') < rentFrom ) INTO isAvailable;
+       SELECT i + 1 INTO i;
+    END WHILE;   
+    RETURN isAvailable;
+
+END;
+
+
+
+
+DELIMITER // ;
+CREATE FUNCTION getDob(emp_name VARCHAR(50)) RETURNS DATE
+BEGIN
+declare dateOfBirth DATE;
+select DOB into dateOfBirth from EMP where Name = emp_name;
+return dateOfBirth;
+END//
+
+
+DECLARE json, products, product VARCHAR(4000);
+DECLARE i INT DEFAULT 0;
+SELECT '{"billNo":16,"date":"2017-13-11 09:05:01","customerName":"Vikas","total":350.0,"fixedCharges":100,"taxAmount":25.78,"status":"paid","product":[{"productId":"MRR11","categoryId":72,"categoryName":"Parker Pen","cost":200,"quantity":2,"log":{"supplierId":"725","supplierName":"Rihant General Stores"}},{"productId":"MRR12","categoryId":56,"categoryName":"Drawing Books","cost":150,"quantity":3,"log":{"supplierId":"725","supplierName":"Rihant General Stores"}}]}
+' INTO json;
+
+SELECT json->"$.product" INTO products;
+
+WHILE i < JSON_LENGTH(products) DO
+    SELECT JSON_EXTRACT(products,CONCAT('$[',i,']')) INTO product;
+    SELECT product;
+    SELECT i + 1 INTO i;
+END WHILE;
+
+
+
+
+
+INSERT INTO user (email, name, password, isHost, birth) 
+VALUES ('h1@test.com', 'h1', 1, true, 1999-09-10);
+
+INSERT INTO user (email, name, password, isHost, birth) 
+VALUES ('h2@test.com', 'h2', 2, true, 1999-09-11);
+
+INSERT INTO user (email, name, password, isHost, birth) 
+VALUES ('r1@test.com', 'r1', 3, false, 1999-09-12);
+
+INSERT INTO user (email, name, password, isHost, birth) 
+VALUES ('r2@test.com', 'r2', 4, false, 1999-09-13);
+
+
+
+INSERT INTO listing (h_uid, type, latitude, longitude, country, city, postalCode, address, amenities, price, availableFrom, availableTo, bookedWindows) 
+VALUES (1, 'fullHouse', 48.44, -123.33, 'us', 'victoria', 'V8P1A1', '495 Dupplin Rd #2b', 'ac, tv', 90,20220101,20220131,'[]');
+
+
+INSERT INTO listing (h_uid, type, latitude, longitude, country, city, postalCode, address, amenities, price, availableFrom, availableTo, bookedWindows) 
+VALUES (1, "fullHouse", 43.78, -79.18, "ca", "toronto", "M1C3A8", "1295 Military Trail", 'wifi', 120, 20220301, 20220331, '[[20220305,20220309], [20220315,20220319]]');
+
+INSERT INTO listing (h_uid, type, latitude, longitude, country, city, postalCode, address, amenities, price, availableFrom, availableTo, bookedWindows) 
+VALUES (2, 'room', 43.78, -79.18, 'ca', 'toronto', 'M1C3A8', '1295 Military Trail', 'washer/dryer', 150, 20220501, 20220531, '[[20220505,20220509], [20220515,20220319], [20220525,20220529]]');
+
+INSERT INTO listing (h_uid, type, latitude, longitude, country, city, postalCode, address, amenities, price, availableFrom, availableTo, bookedWindows) 
+VALUES (2, 'room', 48.44, -123.33, 'ca', 'victoria', 'V8R2Y5', '1500 Holly St', 'pool', 150, 20220101, 20220131, '[[20220105,20220509]]');
+

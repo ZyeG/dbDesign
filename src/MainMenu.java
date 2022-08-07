@@ -50,6 +50,14 @@ public class MainMenu {
                                 System.out.println("Exit");
                                 break;
                             
+                            case 'a':
+                                casea();
+                                break;
+                            
+                            case 'b':
+                                caseb();
+                                break;
+                            
                             default:
                                 System.out.println("Unknown action\n");
                                 break;
@@ -74,8 +82,12 @@ public class MainMenu {
                 "5. comment/rate on finished bookings \n" +
                 "6. cancel booking \n" +
                 "7. search listings with multiple filters \n" +
+                "a. create a listing \n" +
+                "b. remove a listing \n" +
+                "c. update a listing \n" +
+                "d. search listings within radius" + 
                 "--------------------------------------------\n" +
-                "Please select a number for the menu option:\n");
+                "Please select a character for the menu option:\n");
     }
     
     private static void case1(){
@@ -151,6 +163,26 @@ public class MainMenu {
         } catch (Exception e){
             System.out.println(e);
         }
+
+    }
+
+    private static void casea() {
+        try{
+            handler.createListing(scan, isHost, uid);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
+    private static void caseb() {
+        try{
+            handler.deleteListing(scan, isHost, uid);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
+    private static void cased() {
 
     }
 }

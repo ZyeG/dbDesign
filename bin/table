@@ -1,0 +1,57 @@
+DROP TABLE IF EXISTS listing, user,booking;
+
+create table user(
+	uid INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    name varchar(25) NOT NULL,
+    email varchar(25) NOT NULL UNIQUE,
+    password varchar(25) NOT NULL,
+    birth varchar(10) NOT NULL,
+    occupation varchar(25),
+    SIN integer,
+    cardNumber integer,
+    cardExpirationDate integer,
+    CVV integer,
+    isHost boolean NOT NULL, 
+    PRIMARY KEY (uid));
+
+create table listing(
+    lid INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    h_uid INT UNSIGNED NOT NULL,
+    type varchar(10) NOT NULL,
+    latitude DECIMAL(5,2) NOT NULL,
+    longitude DECIMAL(5,2) NOT NULL,
+    country varchar(10) NOT NULL,
+    city varchar(10) NOT NULL,
+    postalCode varchar(7) NOT NULL,
+    address varchar(25) NOT NULL,
+    amenities varchar(50),
+    price integer NOT NULL,
+    availableFrom integer NOT NULL,
+    availableTo integer NOT NULL,
+    bookedWindows JSON,
+    CHECK (type IN ('fullHouse', 'apartment', 'room')),
+    CHECK (country IN ('ca', 'us')),
+    CHECK (city IN ('victoria', 'toronto', 'ny', 'portland')),
+    FOREIGN KEY (h_uid) REFERENCES user(uid),
+    PRIMARY KEY (lid));
+
+create table booking (
+    bid INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    lid INT UNSIGNED NOT NULL,
+    r_uid INT UNSIGNED  NOT NULL,
+    h_uid INT UNSIGNED  NOT NULL,
+    rentFrom integer NOT NULL,
+    rentTo integer NOT NULL,
+    price integer NOT NULL,
+    commentByHost varchar(100),
+    commentByRenter varchar(100),
+    rateByHost integer,
+    rateByRenter integer,
+    canceledBy integer DEFAULT -1,
+    UNIQUE(lid, r_uid,h_uid,rentFrom),
+    PRIMARY KEY (bid),
+    FOREIGN KEY (lid) REFERENCES listing(lid),
+    FOREIGN KEY (r_uid) REFERENCES user(uid),
+    FOREIGN KEY (h_uid) REFERENCES user(uid));
+
+

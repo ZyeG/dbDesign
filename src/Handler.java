@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
+import javax.swing.plaf.basic.BasicBorders.RadioButtonBorder;
+
 import java.time.LocalDate;  
 import java.time.format.DateTimeFormatter;  
 
@@ -334,8 +336,72 @@ public class Handler {
         
     }
 
+    /***********************/
+    /*  Listing Functions  */
+    /***********************/
 
+    public void createListing(Scanner scan, boolean isHost, int h_uid) throws Exception{
+        // Check if user is logged in and is host
+        if (h_uid < 0) throw new Exception("[error] not logged in");
+        if (!isHost) throw new Exception("[error] only host can create a listing");
 
+        // get user input
+        System.out.println("[create a new listing] please enter the following fields:\n");
+        System.out.println("type (fullHouse, apartment, room): ");
+        String type = scan.nextLine();
+        System.out.println("latitude: ");
+        double latitude = Double.parseDouble(scan.nextLine());
+        System.out.println("longitude: ");
+        double longitude = Double.parseDouble(scan.nextLine());
+        System.out.println("country: ");
+        String country = scan.nextLine();
+        System.out.println("city: ");
+        String city = scan.nextLine();
+        System.out.println("postalCode: ");
+        String postalCode = scan.nextLine();
+        System.out.println("address: ");
+        String address = scan.nextLine();
+        System.out.println("price: ");
+        int price = Integer.parseInt(scan.nextLine());
+        System.out.println("available from (YYYYMMDD): ");
+        int availableFrom = Integer.parseInt(scan.nextLine());
+        System.out.println("available to (YYYYMMDD): ");
+        int availableTo = Integer.parseInt(scan.nextLine());
+        System.out.println("amenities (optional, enter nothing to skip): ");
+        String amenities = scan.nextLine();
 
+        // dao
+        try {
+            dao.postListing(h_uid, type, latitude, longitude, country, city, postalCode, address, price, availableFrom, availableTo, amenities);
+        } catch(Exception e){
+            throw e;
+        }
+    
+    }
+    
+    public void deleteListing(Scanner scan, boolean isHost, int h_uid) throws Exception {
+        // Check if user is logged in and is host
+        if (h_uid < 0) throw new Exception("[error] not logged in");
+        if (!isHost) throw new Exception("[error] only hosts have listings");
+
+        // print list of listings
+        ResultSet rs = dao.getListingFromUid(h_uid); 
+        utility.printResultSetListing(rs);
+
+        // delete listing
+        System.out.println("Enter the id of listing to be deleted:");
+        int lid = Integer.parseInt(scan.nextLine());
+
+        // dao
+        try {
+            dao.deleteListing(lid);
+        } catch(Exception e){
+            throw e;
+        }
+    }
+
+    public void searchListingWithinRadius(Scanner scan) throws Exception {
+        
+    }
 }
 

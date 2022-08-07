@@ -30,13 +30,9 @@ END
 |
 DELIMITER ;
 
-DELIMITER |
-CREATE FUNCTION isFinished (rentTo Integer, todayDate Integer) RETURNS BOOLEAN
-DETERMINISTIC
-BEGIN
-DECLARE isFinished BOOLEAN DEFAULT true;
-SELECT (rentTo<todayDate) INTO isFinished; 
-RETURN isFinished;
-END
-|
-DELIMITER ;
+
+
+
+
+
+

@@ -1,5 +1,40 @@
-INSERT INTO booking (lid, r_uid, h_uid,rentFrom,rentTo) 
-VALUES (1,3,1,20220103,20220109);
+INSERT INTO user (email, name, password, isHost, birth) 
+VALUES ('h1@test.com', 'h1', 1, true, 1999-09-10);
 
-INSERT INTO booking (lid, r_uid, h_uid,rentFrom,rentTo) 
-VALUES (2,3,1,20220820,20220824);
+INSERT INTO user (email, name, password, isHost, birth) 
+VALUES ('h2@test.com', 'h2', 2, true, 1999-09-11);
+
+INSERT INTO user (email, name, password, isHost, birth) 
+VALUES ('r1@test.com', 'r1', 3, false, 1999-09-12);
+
+
+
+INSERT INTO listing (h_uid, type, latitude, longitude, country, city, postalCode, address, amenities, price, availableFrom, availableTo, bookedWindows) 
+VALUES (1, 'fullHouse', 48.44, -123.33, 'ca', 'victoria', 'V8P1A1', '495 Dupplin Rd #2b', '["ac","tv"]', 90,20220101,20220131,'[[20220103,20220109]]');
+
+INSERT INTO listing (h_uid, type, latitude, longitude, country, city, postalCode, address, amenities, price, availableFrom, availableTo, bookedWindows) 
+VALUES (1, "fullHouse", 43.77, -79.25, "ca", "toronto", "M1P4P5", "300 Borough Dr", '["ac","wifi"]', 160, 20220801, 20220831, JSON_ARRAY());
+
+INSERT INTO listing (h_uid, type, latitude, longitude, country, city, postalCode, address, amenities, price, availableFrom, availableTo, bookedWindows) 
+VALUES (1, "fullHouse", 43.66, -79.38, "ca", "toronto", "M5G2C8", "777 Bay Street", '["ac"]', 200, 20220101, 20220131, JSON_ARRAY(JSON_ARRAY(20220103,20220109)));
+
+INSERT INTO listing (h_uid, type, latitude, longitude, country, city, postalCode, address, amenities, price, availableFrom, availableTo, bookedWindows) 
+VALUES (1, "fullHouse", 43.78, -79.18, "ca", "toronto", "M1C3A8", "1295 Military Trail", '["wifi"]', 120, 20220801, 20220831 ,JSON_ARRAY(JSON_ARRAY(20220805,20220809), JSON_ARRAY(20220810,20220812)));
+
+
+INSERT INTO booking (lid, r_uid, h_uid,rentFrom,rentTo, price,commentByRenter) VALUES (1,3,1,20220103,20220109,90,"comment,place,good");
+
+INSERT INTO booking (lid, r_uid, h_uid,rentFrom,rentTo, price,commentByRenter) VALUES (1,3,1,20220110,20220115,90,"comment,place");
+
+INSERT INTO booking (lid, r_uid, h_uid,rentFrom,rentTo, price,commentByRenter) VALUES (1,3,1,20220118,20220120,90,"place");
+
+INSERT INTO booking (lid, r_uid, h_uid,rentFrom,rentTo, price,commentByRenter) VALUES (1,3,1,20220123,20220124,90,"");
+
+
+
+
+INSERT INTO booking (lid, r_uid, h_uid,rentFrom,rentTo, price,commentByRenter) VALUES (2,3,1,20220805,20220809,120,"tv");
+
+INSERT INTO booking (lid, r_uid, h_uid,rentFrom,rentTo, price,commentByRenter) VALUES (2,3,1,202208010,20220815,120,"pool,ac");
+
+INSERT INTO booking (lid, r_uid, h_uid,rentFrom,rentTo, price,commentByRenter) VALUES (2,3,1,202208020,20220821,120,"ac,ac");

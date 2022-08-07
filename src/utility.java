@@ -1,4 +1,7 @@
 import java.sql.ResultSet;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 public class utility {
 
     public static Integer printResultSetListing(ResultSet rs) throws Exception {
@@ -52,6 +55,121 @@ public class utility {
         }
         
     }
+
+    public static void printReportBooking1(ResultSet rs) throws Exception {
+        System.out.println("1. total number of bookings in a specific date range by city");
+        try {
+            while (rs.next()) {
+                
+                System.out.printf("city: '%s', ", rs.getString("city"));
+                System.out.printf("count: %d, ", rs.getInt("count(*)"));
+                System.out.println("\n");
+            }
+            System.out.println("\n");
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
+    public static void printReportBooking2(ResultSet rs) throws Exception {
+        System.out.println("2. total number of bookings in a specific date range by zip code within a city.");
+        try {
+            while (rs.next()) {
+                
+                System.out.printf("postalCode: '%s', ", rs.getString("postalCode"));
+                System.out.printf("city: '%s', ", rs.getString("city"));
+                System.out.printf("count: %d, ", rs.getInt("count(*)"));
+                System.out.println("\n");
+            }
+            System.out.println("\n");
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
+    public static void printReportBooking3(ResultSet rs) throws Exception {
+        System.out.println("3. rank the renters by the number of bookings");
+        try {
+            while (rs.next()) {
+                
+                System.out.printf("r_uid: %d, ", rs.getInt("r_uid"));
+                System.out.printf("count: %d, ", rs.getInt("count(*)"));
+                System.out.println("\n");
+            }
+            System.out.println("\n");
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
+
+    public static void printReportBooking4(ResultSet rs) throws Exception {
+        System.out.println("4. rank the renters by the number of bookings");
+        try {
+            while (rs.next()) {
+                
+                System.out.printf("r_uid: %d, ", rs.getInt("r_uid"));
+                System.out.printf("city: '%s', ", rs.getString("city"));
+                System.out.printf("count: %d, ", rs.getInt("count(*)"));
+                System.out.println("\n");
+            }
+            System.out.println("\n");
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
+    public static boolean canDeleteUser(ResultSet rs, int todayDate_int) throws Exception {
+        boolean canDeleteUser = true;
+        while (rs.next()) {
+            // if any booking is ongoing & not canceled, set canDelete to false
+            if ((rs.getInt("rentTo")>todayDate_int) && (rs.getInt("canceledBy")!=-1)) {
+                canDeleteUser = false;
+                break;
+            }
+        }
+        return canDeleteUser;
+    }
+
+    public static String findWord(String[] arr)
+    {
+ 
+        // Create HashMap to store word and it's frequency
+        HashMap<String, Integer> hs = new HashMap<String, Integer>();
+ 
+        // Iterate through array of words
+        for (int i = 0; i < arr.length; i++) {
+            // If word already exist in HashMap then increase it's count by 1
+            if (hs.containsKey(arr[i])) {
+                hs.put(arr[i], hs.get(arr[i]) + 1);
+            }
+            // Otherwise add word to HashMap
+            else {
+                hs.put(arr[i], 1);
+            }
+        }
+ 
+        // Create set to iterate over HashMap
+        Set<Map.Entry<String, Integer> > set = hs.entrySet();
+        String key = "";
+        int value = 0;
+ 
+        for (Map.Entry<String, Integer> me : set) {
+            // Check for word having highest frequency
+            if (me.getValue() > value) {
+                value = me.getValue();
+                key = me.getKey();
+            }
+        }
+ 
+        // Return word having highest frequency
+        return key;
+    }
+ 
 }
 
 

@@ -2,6 +2,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
 
@@ -82,6 +83,34 @@ public class Handler {
         }
     }
 
+    public void deleteUser(int uid, boolean isHost) throws Exception {
+        // 
+        if (uid ==-1) {
+            throw new Exception("please login first");
+        }
+
+        // get today date
+        String[] splitTodayDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")).split("-");
+        String todayDate_str = "";
+        for (int i=0; i<3; i++){
+            todayDate_str=todayDate_str.concat(splitTodayDate[i]);
+        }
+        int todayDate_int = Integer.parseInt(todayDate_str);
+        
+        // 
+        try {
+            ResultSet rs = dao.getBookingFromUid(uid);
+            if (utility.canDeleteUser(rs,todayDate_int)){
+                dao.deleteUser(uid,isHost);
+            }
+            else {
+                throw new Exception("cannot delete account, has ongoing bookings");
+            }
+        } catch(Exception e) {
+            throw e;
+        }
+    }
+
     public void searchListing (Scanner scan, Integer uid, boolean isHost) throws Exception {
         // parse
         parser.searchListing(scan);
@@ -91,7 +120,7 @@ public class Handler {
             // get listings
             ResultSet rs = dao.searchListing(parser.rentFrom, parser.rentTo);
             // restore table listing 
-            dao.searchListingHelper_restore();
+            // dao.searchListingHelper_restore();
             // print listings
             try{
                 listing_count = utility.printResultSetListing(rs);
@@ -272,7 +301,7 @@ public class Handler {
             throw new Exception("not logged in");
         }
 
-        // get today date, can cancel only before start
+        // get today date
         String[] splitTodayDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")).split("-");
         String todayDate_str = "";
         for (int i=0; i<3; i++){
@@ -280,7 +309,7 @@ public class Handler {
         }
         int todayDate_int = Integer.parseInt(todayDate_str);
 
-        // 
+        // check can cancel (todaydate<rentForm) , cancel, and update bookedWindows
         int booking_count =0;
         try {
             ResultSet rs = dao.getBookingFromUid(canceledBy_uid);
@@ -302,7 +331,10 @@ public class Handler {
                         }
                         else {
                             try {
+                                // patch canceledBy to booking
                                 dao.cancelBooking(canceledBy_uid, bid);
+                                // update bookedWindows to listing
+                                // dao.cancelBooking_updateBookedWindows(rs2.getInt("lid"),rs2.getInt("rentTo"),rs2.getInt("rentFrom"));
                             } catch(Exception e){
                                 throw e;
                             }
@@ -326,16 +358,60 @@ public class Handler {
         List<String> filters_parsed = Arrays.asList(filters.replace("\n", "").split(","));
         try {
             // get listing
-            dao.searchListingMultiFilter(scan, filters_parsed);
+            ResultSet rs = dao.searchListingMultiFilter(scan, filters_parsed);
             // print listing
+            utility.printResultSetListing(rs);
         } catch (Exception e) {
             throw e;
         }
-        
+    }
+
+    public void reportBooking(Scanner scan) throws Exception {
+        System.out.println("start time:");
+        int startTime = Integer.parseInt(scan.nextLine());
+        System.out.println("end time:");
+        int endTime = Integer.parseInt(scan.nextLine());
+        try {
+            ResultSet rs1 = dao.reportBooking1(startTime,endTime);
+            utility.printReportBooking1(rs1);
+            ResultSet rs2 = dao.reportBooking2(startTime,endTime);
+            utility.printReportBooking2(rs2);
+            ResultSet rs3 = dao.reportBooking3();
+            utility.printReportBooking3(rs3);
+            ResultSet rs4 = dao.reportBooking4(startTime,endTime);
+            utility.printReportBooking4(rs4);
+
+        } catch (Exception e){
+            throw e;
+        }
+
     }
 
 
-
-
+    public void wordCloud() throws Exception {
+        
+        HashMap<Integer, String> lid_word = new HashMap<Integer, String>(); 
+        try {
+            // get distinct lid from booking
+            ResultSet rs1 = dao.getDistinctLidFromBooking();
+            while(rs1.next()){
+                lid_word.put(rs1.getInt("lid"), "");
+            }
+            // select commentByRenter from booking where lid=?, loop through rs_lid, get String comments_lid (concat, find word_lid 
+            for (int lid :lid_word.keySet()){
+                ResultSet rs = dao.getCommentFromLid(lid);
+                String comment = "";
+                while(rs.next()){
+                    comment = comment + ","+rs.getString("commentByRenter");
+                }
+                String[] comment_parsed = comment.split(",");
+                lid_word.put(lid, utility.findWord(comment_parsed));
+            }
+            // print
+            for (int lid: lid_word.keySet()) {
+                System.out.printf("for lid %d, most common word of renters' comments is: '%s'\n", lid, lid_word.get(lid));
+            }
+        } catch (Exception e){throw e;}
+    }
 }
 

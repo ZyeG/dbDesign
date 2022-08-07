@@ -28,7 +28,7 @@ create table listing(
     price integer NOT NULL,
     availableFrom integer NOT NULL,
     availableTo integer NOT NULL,
-    bookedWindows JSON,
+    bookedWindows JSON,    
     CHECK (type IN ('fullHouse', 'apartment', 'room')),
     CHECK (country IN ('ca', 'us')),
     CHECK (city IN ('victoria', 'toronto', 'ny', 'portland')),
@@ -43,15 +43,13 @@ create table booking (
     rentFrom integer NOT NULL,
     rentTo integer NOT NULL,
     price integer NOT NULL,
-    commentByHost varchar(100),
-    commentByRenter varchar(100),
-    rateByHost integer,
-    rateByRenter integer,
+    commentByHost varchar(100) DEFAULT "",
+    commentByRenter varchar(100) DEFAULT "",
+    rateByHost integer DEFAULT -1,
+    rateByRenter integer DEFAULT -1,
     canceledBy integer DEFAULT -1,
     UNIQUE(lid, r_uid,h_uid,rentFrom),
     PRIMARY KEY (bid),
     FOREIGN KEY (lid) REFERENCES listing(lid),
     FOREIGN KEY (r_uid) REFERENCES user(uid),
     FOREIGN KEY (h_uid) REFERENCES user(uid));
-
-

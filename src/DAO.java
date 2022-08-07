@@ -1,6 +1,9 @@
 import java.sql.*;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
+
+import javax.swing.text.html.parser.Entity;
 
 public class DAO {
 
@@ -81,7 +84,56 @@ public class DAO {
         
     }
 
-    // TODO delete, cancel all booking not started yet, if renter delete all listings
+    public void deleteUser(int uid, boolean isHost) throws Exception{
+
+        // host
+        if (isHost) {
+            // remove all bookings
+            String query1 =  "DELETE FROM booking WHERE h_uid = ? ";
+            try {
+                PreparedStatement ps = this.conn.prepareStatement(query1);
+                ps.setInt(1, uid);
+                ps.executeUpdate();
+            } catch (SQLException e) {
+                throw new SQLException();
+            }
+
+            // remove all listing
+            String query2 = "DELETE FROM listing WHERE h_uid=?";
+            try {
+                PreparedStatement ps = this.conn.prepareStatement(query2);
+                ps.setInt(1, uid);
+                ps.executeUpdate();
+            } catch (SQLException e){
+                throw new SQLException();
+            }
+
+        }
+        // renter
+        else {
+            // remove all bookings
+            String query1 =  "DELETE FROM booking WHERE r_uid = ? ";
+            try {
+                PreparedStatement ps = this.conn.prepareStatement(query1);
+                ps.setInt(1, uid);
+                ps.executeUpdate();
+            } catch (SQLException e) {
+                throw new SQLException();
+            }
+
+        }
+
+
+        // remove user
+        String query3 =  "DELETE FROM user WHERE uid = ? ";
+        try {
+            PreparedStatement ps = this.conn.prepareStatement(query3);
+            ps.setInt(1, uid);
+            ps.executeUpdate();
+        } catch (SQLException e){
+            throw new SQLException();
+        }
+    }
     
 
 
@@ -89,20 +141,24 @@ public class DAO {
     /* listing */
 
     public ResultSet searchListing(int rentFrom, int rentTo) throws SQLException {
-        String query1 =  "ALTER TABLE listing ADD COLUMN rentFrom Integer DEFAULT ?, ADD COLUMN rentTo Integer DEFAULT ? ";
+        // String query1 =  "ALTER TABLE listing ADD COLUMN rentFrom Integer DEFAULT ?, ADD COLUMN rentTo Integer DEFAULT ? ";
+        // try {
+        //     PreparedStatement ps = this.conn.prepareStatement(query1);
+        //     ps.setInt(1, rentFrom);
+        //     ps.setInt(2, rentTo);
+        //     ps.execute();
+        // } catch (SQLException e){
+        //     e.printStackTrace();
+        //     throw new SQLException();
+        // }
+
+        String query = "SELECT * from listing where notBooked(listing.bookedWindows, ?, ?) AND withinAvailability(listing.availableFrom, listing.availableTo, ?, ?)";
         try {
-            PreparedStatement ps = this.conn.prepareStatement(query1);
+            PreparedStatement ps = this.conn.prepareStatement(query);
             ps.setInt(1, rentFrom);
             ps.setInt(2, rentTo);
-            ps.execute();
-        } catch (SQLException e){
-            e.printStackTrace();
-            throw new SQLException();
-        }
-
-        String query2 = "SELECT * from listing where notBooked(listing.bookedWindows, listing.rentFrom, listing.rentTo) AND withinAvailability(listing.availableFrom, listing.availableTo, listing.rentFrom, listing.rentTo)";
-        try {
-            PreparedStatement ps = this.conn.prepareStatement(query2);
+            ps.setInt(3, rentFrom);
+            ps.setInt(4, rentTo);
             return ps.executeQuery();
         } catch (SQLException e){
             e.printStackTrace();
@@ -110,16 +166,16 @@ public class DAO {
         }
     }
 
-    public void searchListingHelper_restore() throws SQLException {
-        String query =  "ALTER TABLE listing DROP COLUMN rentFrom, DROP COLUMN rentTo ";
-        try {
-            PreparedStatement ps = this.conn.prepareStatement(query);
-            ps.execute();
-        } catch (SQLException e){
-            e.printStackTrace();
-            throw new SQLException();
-        }
-    }
+    // public void searchListingHelper_restore() throws SQLException {
+    //     String query =  "ALTER TABLE listing DROP COLUMN rentFrom, DROP COLUMN rentTo ";
+    //     try {
+    //         PreparedStatement ps = this.conn.prepareStatement(query);
+    //         ps.execute();
+    //     } catch (SQLException e){
+    //         e.printStackTrace();
+    //         throw new SQLException();
+    //     }
+    // }
 
     public ResultSet getListingFromlid(int lid) throws SQLException {
         String query =  "SELECT * FROM listing WHERE lid = ?";
@@ -149,7 +205,7 @@ public class DAO {
             throw e;
         }
     }
-
+    
     public void updateBookedWindows(int lid, int rentFrom, int rentTo) throws SQLException {
         String query =  "UPDATE listing SET bookedWindows = JSON_ARRAY_APPEND((select * from (SELECT bookedWindows FROM listing WHERE lid = ?)tblTmp), '$', (SELECT JSON_ARRAY (?,?))) WHERE lid = ?";
         try {
@@ -234,6 +290,14 @@ public class DAO {
         }
     }
 
+    public void cancelBooking_updateBookedWindows(int lid, int rentTo,int rentFrom) throws SQLException {
+        String query;
+        try {
+            query = ""
+        }
+
+    }
+
     public void patchRenterPayinfo(int uid, int cardNumber, int cardExpirationDate, int CVV) throws SQLException {
         String query;
         try {
@@ -250,7 +314,7 @@ public class DAO {
         }
     }
 
-    public void searchListingMultiFilter(Scanner scan, List<String> filters_parsed) {
+    public ResultSet searchListingMultiFilter(Scanner scan, List<String> filters_parsed) throws Exception{
         // distance,city, postalCode, address, amenities, price, time, separate by ,\nexample: city,priceRange,timeWindow
         
         double latitude = -1.00;
@@ -262,10 +326,42 @@ public class DAO {
         String amenities = null;
         int price_upper = -1;
         int price_lower = -1;
-        int timeFrom = -1;
-        int timeTo = -1;
+        // int timeFrom = -1;
+        // int timeTo = -1;
+
+        // String query = "SELECT * from listing WHERE (SELECT ST_Distance_Sphere(point(longitude, latitude), point(?,?))<?) AND "+
+        // "city like ? AND " +
+        // "address like ? AND " +
+        // "postalCode like ? AND " +
+        // "price<? AND price>? AND " +
+        // "notBooked(bookedWindows, ? , ?) AND withinAvailability(availableFrom, availableTo, ?, ?))";
+        String query = "SELECT * from listing WHERE (SELECT ST_Distance_Sphere(point(longitude, latitude), point(?,?))<?) AND "+
+        "city like ? AND " +
+        "address like ? AND " +
+        "postalCode like ? AND " +
+        "price<=? AND price>=?";
 
 
+        PreparedStatement ps = this.conn.prepareStatement(query);
+        ps.setDouble(1, -79.18);
+        ps.setDouble(2, 43.78);
+        ps.setDouble(3, 9999999999999999.99);
+        // city
+        ps.setString(4, "%");
+        // address
+        ps.setString(5, "%");
+        // postalCode
+        ps.setString(6,"%");
+        // price
+        ps.setInt(7, 1000);
+        ps.setInt(8, 0);
+        //time
+        // ps.setInt(9, 20220101);
+        // ps.setInt(10, 20220831);
+        // ps.setInt(11, 20220101);
+        // ps.setInt(12, 20220831);
+
+        // set individual query with filter given
         if (filters_parsed.contains("distance")){
             System.out.println("latitude");
             latitude = Double.parseDouble(scan.nextLine()); 
@@ -273,72 +369,157 @@ public class DAO {
             longitude = Double.parseDouble(scan.nextLine());
             System.out.println("distance(in meters)");
             distance = Double.parseDouble(scan.nextLine());
+
+            ps.setDouble(1, longitude);
+            ps.setDouble(2, latitude);
+            ps.setDouble(3, distance);
+
+            
         }
         if (filters_parsed.contains("city")) {
-            System.out.println("city");
+            System.out.println("city:");
             city = scan.nextLine();
+
+            ps.setString(4, city);
         }
+
         if (filters_parsed.contains("postalCode")) {
             System.out.println("postalCode");
             postalCode = scan.nextLine();
+
+            ps.setString(6,postalCode);
         }
         if (filters_parsed.contains("address")) {
             System.out.println("address");
             address = scan.nextLine();
+
+            ps.setString(5, address);
+            
         }
-        if (filters_parsed.contains("amenities")) {
-            System.out.println("amenities");
-            amenities = scan.nextLine();
-            String[] amenities_parsed = amenities.replace("\n", "").split(",");
-            int ameniteis_count = amenities_parsed.length;
-        }
+        // if (filters_parsed.contains("amenities")) {
+        //     System.out.println("amenities");
+        //     amenities = scan.nextLine();
+        //     String[] amenities_parsed = amenities.replace("\n", "").split(",");
+        //     int amenities_count = amenities_parsed.length;
+        // }
         if (filters_parsed.contains("price")) {
             System.out.println("price_upper");
             price_upper = Integer.parseInt(scan.nextLine());
             System.out.println("price_lower");
             price_lower = Integer.parseInt(scan.nextLine());
+
+            ps.setInt(7, price_upper);
+            ps.setInt(8, price_lower);
+
         }
-        if (filters_parsed.contains("time")){
-            System.out.println("timeFrom");
-            timeFrom = Integer.parseInt(scan.nextLine());
-            System.out.println("timeTo");
-            timeTo = Integer.parseInt(scan.nextLine());
+        // if (filters_parsed.contains("time")){
+        //     System.out.println("timeFrom");
+        //     timeFrom = Integer.parseInt(scan.nextLine());
+        //     System.out.println("timeTo");
+        //     timeTo = Integer.parseInt(scan.nextLine());
+
+        //     ps.setInt(9, timeFrom);
+        //     ps.setInt(10, timeTo);
+        //     ps.setInt(11, timeFrom);
+        //     ps.setInt(12, timeTo);
+        // }
+
+        // // test
+        // System.out.println("printing the filter query");
+        // System.out.println(ps);
+    
+        // exec query
+        try {
+            return ps.executeQuery();
+        } catch(Exception e) {
+            e.printStackTrace();
+            throw e;
         }
 
-        String query;
+    }
+    
+
+    // public ResultSet searchListingMultiFilter_temp (Scanner scan, List<String> filters_parsed, PreparedStatement previous_ps) throws Exception {
+
+    //     return null;
+    // }
+    public ResultSet reportBooking1(int startTime, int endTime) throws Exception {
+        String query = "select city,count(*) from booking natural join listing where rentFrom>? and rentTo<? group by city";
         try {
-            query = "UPDATE user SET cardNumber = ?, cardExpirationDate =?, CVV = ? WHERE uid = ? ";
             PreparedStatement ps = this.conn.prepareStatement(query);
-            ps.setInt(1, cardNumber);
-            ps.setInt(2, cardExpirationDate);
-            ps.setInt(3, CVV);
-            ps.setInt(4, uid);
-            ps.executeUpdate();
+            ps.setInt(1, startTime);
+            ps.setInt(2, endTime);
+            return ps.executeQuery();
         } catch (Exception e) {
             e.printStackTrace();
             throw new SQLException();
         }
 
-
-
-
-
-
-    //     lid INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    // h_uid INT UNSIGNED NOT NULL,
-    // type varchar(10) NOT NULL,
-    // latitude DECIMAL(5,2) NOT NULL,
-    // longitude DECIMAL(5,2) NOT NULL,
-    // country varchar(10) NOT NULL,
-    // city varchar(10) NOT NULL,
-    // postalCode varchar(7) NOT NULL,
-    // address varchar(25) NOT NULL,
-    // amenities varchar(50),
-    // price integer NOT NULL,
-    // availableFrom integer NOT NULL,
-    // availableTo integer NOT NULL,
-    // bookedWindows JSON,
     }
-    
+
+    public ResultSet reportBooking2(int startTime, int endTime) throws Exception {
+        String query = "select postalCode,city,count(*) from booking natural join listing where rentFrom>? and rentTo<? group by city, postalCode";
+        try {
+            PreparedStatement ps = this.conn.prepareStatement(query);
+            ps.setInt(1, startTime);
+            ps.setInt(2, endTime);
+            return ps.executeQuery();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new SQLException();
+        }
+
+    }
+
+    public ResultSet reportBooking3() throws Exception {
+        String query = "select r_uid, count(*) from booking group by r_uid order by count(*)";
+        try {
+            PreparedStatement ps = this.conn.prepareStatement(query);
+            return ps.executeQuery();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new SQLException();
+        }
+
+    }
+
+    public ResultSet reportBooking4(int startTime, int endTime) throws Exception {
+        String query = "select r_uid,city,count(*) from booking natural join listing where rentTo<? and rentFrom>? group by city,r_uid having count(*)>=2 order by count(*)";
+        try {
+            PreparedStatement ps = this.conn.prepareStatement(query);
+            ps.setInt(1, endTime);
+            ps.setInt(2, startTime);
+            return ps.executeQuery();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new SQLException();
+        }
+
+    }
+
+    public ResultSet getDistinctLidFromBooking() throws Exception {
+        String query = "select distinct(lid) from booking";
+        try {
+            PreparedStatement ps = this.conn.prepareStatement(query);
+            return ps.executeQuery();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new SQLException();
+        }
+    }
+
+    public ResultSet getCommentFromLid(int lid) throws Exception {
+        String query = "select commentByRenter from booking where lid = ?";
+        try {
+            PreparedStatement ps = this.conn.prepareStatement(query);
+            ps.setInt(1, lid);
+            return ps.executeQuery();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new SQLException();
+        }
+    }
+
+
 
 }

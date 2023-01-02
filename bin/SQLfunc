@@ -1,0 +1,38 @@
+DROP FUNCTION IF EXISTS notBooked;
+DROP FUNCTION IF EXISTS withinAvailability;
+
+DELIMITER |
+CREATE FUNCTION notBooked (bookedWindows JSON, rentFrom Integer, rentTo Integer) RETURNS BOOLEAN
+DETERMINISTIC
+BEGIN
+DECLARE i INT DEFAULT 0;
+DECLARE notBooked BOOLEAN DEFAULT true;
+myloop:WHILE i < JSON_LENGTH(bookedWindows) DO
+SELECT (JSON_EXTRACT(JSON_EXTRACT(bookedWindows,CONCAT('$[',i,']')), '$[0]') > rentTo) OR (JSON_EXTRACT(JSON_EXTRACT(bookedWindows,CONCAT('$[',i,']')), '$[1]') < rentFrom ) INTO notBooked;
+IF notBooked = false THEN
+LEAVE myloop;
+END IF;
+SELECT i + 1 INTO i;
+END WHILE myloop;   
+RETURN notBooked;
+END
+|
+DELIMITER ;
+
+DELIMITER |
+CREATE FUNCTION withinAvailability (availableFrom Integer, availableTo Integer, rentFrom Integer, rentTo Integer) RETURNS BOOLEAN
+DETERMINISTIC
+BEGIN
+DECLARE withinAvailability BOOLEAN DEFAULT true;
+SELECT (rentFrom>=availableFrom) AND (rentTo<=availableTo) INTO withinAvailability; 
+RETURN withinAvailability;
+END
+|
+DELIMITER ;
+
+
+
+
+
+
+

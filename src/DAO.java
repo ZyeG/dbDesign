@@ -1,9 +1,6 @@
 import java.sql.*;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
-
-import javax.swing.text.html.parser.Entity;
 
 public class DAO {
 
@@ -17,7 +14,7 @@ public class DAO {
 			this.conn = DriverManager.getConnection(url, "root", "cscc43s2022");
 		} 
 		catch (Exception e) {
-			e.printStackTrace();
+			
 		}
 	}
 
@@ -78,7 +75,7 @@ public class DAO {
                 ps.executeUpdate();
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            
             throw new SQLException();
         }
         
@@ -148,20 +145,29 @@ public class DAO {
         //     ps.setInt(2, rentTo);
         //     ps.execute();
         // } catch (SQLException e){
-        //     e.printStackTrace();
+        //     
         //     throw new SQLException();
         // }
 
-        String query = "SELECT * from listing where notBooked(listing.bookedWindows, ?, ?) AND withinAvailability(listing.availableFrom, listing.availableTo, ?, ?)";
+        // String query = "SELECT * from listing where notBooked(listing.bookedWindows, ?, ?) AND withinAvailability(listing.availableFrom, listing.availableTo, ?, ?)";
+        // try {
+        //     PreparedStatement ps = this.conn.prepareStatement(query);
+        //     ps.setInt(1, rentFrom);
+        //     ps.setInt(2, rentTo);
+        //     ps.setInt(3, rentFrom);
+        //     ps.setInt(4, rentTo);
+        //     return ps.executeQuery();
+        // } catch (SQLException e){
+            
+        //     throw new SQLException();
+        // }
+        String query = "SELECT * from listing where availableFrom<=? AND availableTo>=?";
         try {
             PreparedStatement ps = this.conn.prepareStatement(query);
             ps.setInt(1, rentFrom);
             ps.setInt(2, rentTo);
-            ps.setInt(3, rentFrom);
-            ps.setInt(4, rentTo);
             return ps.executeQuery();
         } catch (SQLException e){
-            e.printStackTrace();
             throw new SQLException();
         }
     }
@@ -172,7 +178,7 @@ public class DAO {
     //         PreparedStatement ps = this.conn.prepareStatement(query);
     //         ps.execute();
     //     } catch (SQLException e){
-    //         e.printStackTrace();
+    //         
     //         throw new SQLException();
     //     }
     // }
@@ -184,7 +190,19 @@ public class DAO {
             ps.setInt(1, lid);
             return ps.executeQuery();
         } catch (SQLException e){
-            e.printStackTrace();
+            
+            throw new SQLException();
+        }
+    }
+
+    public ResultSet getListingFromHuid(int h_uid) throws Exception {
+        String query =  "SELECT * FROM listing WHERE h_uid = ?";
+        try {
+            PreparedStatement ps = this.conn.prepareStatement(query);
+            ps.setInt(1, h_uid);
+            return ps.executeQuery();
+        } catch (SQLException e){
+            
             throw new SQLException();
         }
     }
@@ -216,21 +234,35 @@ public class DAO {
             ps.setInt(4, lid);
             ps.execute();
         } catch (SQLException e) {
-            e.printStackTrace();
+            
             throw e;
         }
     }
 
-    public ResultSet getBookingFromUid(int h_uid) throws SQLException {
-        String query =  "SELECT * FROM booking WHERE h_uid = ? AND canceledBy = -1";
-        try {
-            PreparedStatement ps = this.conn.prepareStatement(query);
-            ps.setInt(1, h_uid);
-            return ps.executeQuery();
-        } catch (SQLException e){
-            e.printStackTrace();
-            throw new SQLException();
+    public ResultSet getBookingFromUid(int uid, boolean isHost) throws SQLException {
+        if (isHost){
+            String query =  "SELECT * FROM booking WHERE h_uid = ? AND canceledBy = -1";
+            try {
+                PreparedStatement ps = this.conn.prepareStatement(query);
+                ps.setInt(1, uid);
+                return ps.executeQuery();
+            } catch (SQLException e){
+                throw new SQLException();
+            }
         }
+        else {
+            String query =  "SELECT * FROM booking WHERE r_uid = ? AND canceledBy = -1";
+            try {
+                PreparedStatement ps = this.conn.prepareStatement(query);
+                ps.setInt(1, uid);
+                return ps.executeQuery();
+            } catch (SQLException e){
+                
+                throw new SQLException();
+            }
+
+        }
+        
     }
 
     public ResultSet getBookingFromBid (int bid) throws Exception {
@@ -240,7 +272,19 @@ public class DAO {
             ps.setInt(1, bid);
             return ps.executeQuery();
         } catch (SQLException e){
-            e.printStackTrace();
+            
+            throw new SQLException();
+        }
+    }
+
+    public ResultSet getBookingFromlid (int lid) throws Exception {
+        String query =  "SELECT * FROM booking WHERE lid = ? ";
+        try {
+            PreparedStatement ps = this.conn.prepareStatement(query);
+            ps.setInt(1, lid);
+            return ps.executeQuery();
+        } catch (SQLException e){
+            
             throw new SQLException();
         }
     }
@@ -255,7 +299,7 @@ public class DAO {
             ps.setInt(3, bid);
             ps.executeUpdate();
         } catch (Exception e) {
-            e.printStackTrace();
+            
             throw new SQLException();
         }
 
@@ -271,7 +315,7 @@ public class DAO {
             ps.setInt(3, bid);
             ps.executeUpdate();
         } catch (Exception e) {
-            e.printStackTrace();
+            
             throw new SQLException();
         }
     }
@@ -285,17 +329,9 @@ public class DAO {
             ps.setInt(2, bid);
             ps.executeUpdate();
         } catch (Exception e) {
-            e.printStackTrace();
+            
             throw new SQLException();
         }
-    }
-
-    public void cancelBooking_updateBookedWindows(int lid, int rentTo,int rentFrom) throws SQLException {
-        String query;
-        try {
-            query = ""
-        }
-
     }
 
     public void patchRenterPayinfo(int uid, int cardNumber, int cardExpirationDate, int CVV) throws SQLException {
@@ -309,7 +345,7 @@ public class DAO {
             ps.setInt(4, uid);
             ps.executeUpdate();
         } catch (Exception e) {
-            e.printStackTrace();
+            
             throw new SQLException();
         }
     }
@@ -323,7 +359,6 @@ public class DAO {
         String city = null;
         String postalCode = null;
         String address = null;
-        String amenities = null;
         int price_upper = -1;
         int price_lower = -1;
         // int timeFrom = -1;
@@ -432,7 +467,7 @@ public class DAO {
         try {
             return ps.executeQuery();
         } catch(Exception e) {
-            e.printStackTrace();
+            
             throw e;
         }
 
@@ -451,7 +486,7 @@ public class DAO {
             ps.setInt(2, endTime);
             return ps.executeQuery();
         } catch (Exception e) {
-            e.printStackTrace();
+            
             throw new SQLException();
         }
 
@@ -465,7 +500,7 @@ public class DAO {
             ps.setInt(2, endTime);
             return ps.executeQuery();
         } catch (Exception e) {
-            e.printStackTrace();
+            
             throw new SQLException();
         }
 
@@ -477,7 +512,7 @@ public class DAO {
             PreparedStatement ps = this.conn.prepareStatement(query);
             return ps.executeQuery();
         } catch (Exception e) {
-            e.printStackTrace();
+            
             throw new SQLException();
         }
 
@@ -491,7 +526,7 @@ public class DAO {
             ps.setInt(2, startTime);
             return ps.executeQuery();
         } catch (Exception e) {
-            e.printStackTrace();
+            
             throw new SQLException();
         }
 
@@ -503,7 +538,7 @@ public class DAO {
             PreparedStatement ps = this.conn.prepareStatement(query);
             return ps.executeQuery();
         } catch (Exception e) {
-            e.printStackTrace();
+            
             throw new SQLException();
         }
     }
@@ -515,11 +550,231 @@ public class DAO {
             ps.setInt(1, lid);
             return ps.executeQuery();
         } catch (Exception e) {
+            
+            throw new SQLException();
+        }
+    }
+
+    public void postListing(int h_uid, String type, double latitude, double longitude, String country, String city, 
+            String postalCode, String address, int price, int availableFrom, int availableTo, String amenities) throws SQLException {
+        String query =  "INSERT INTO listing (h_uid, type, latitude, longitude, country, city, postalCode, address, price, availableFrom, availableTo, amenities) " + 
+                        "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ";
+        try {
+            PreparedStatement ps = this.conn.prepareStatement(query);
+            ps.setInt(1, h_uid);
+            ps.setString(2, type);
+            ps.setDouble(3, latitude);
+            ps.setDouble(4, longitude);
+            ps.setString(5, country);
+            ps.setString(6, city);
+            ps.setString(7, postalCode);
+            ps.setString(8, address);
+            ps.setInt(9, price);
+            ps.setInt(10, availableFrom);
+            ps.setInt(11, availableTo);
+            if(amenities == "") {
+                ps.setNull(12, Types.VARCHAR);   
+            } else {
+                ps.setString(12, amenities);
+            }
+            ps.execute();
+        } catch (SQLException e) {
+            throw e;
+        }
+    }
+
+    public void deleteListing(int lid) throws SQLException {
+        String query = "DELETE FROM listing WHERE lid = ?";
+        try {
+            PreparedStatement ps = this.conn.prepareStatement(query);
+            ps.setInt(1, lid);
+            ps.executeUpdate();
+        } catch (SQLException e){
+            throw new SQLException();
+        }
+    }
+
+    public void updateListingPrice(int lid, int price) throws SQLException {
+        String query;
+        try {
+            query = "UPDATE listing SET price = ? WHERE lid = ?";
+            PreparedStatement ps = this.conn.prepareStatement(query);
+            ps.setInt(1, price);
+            ps.setInt(2, lid);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            throw new SQLException();
+        }
+    }
+
+    public void updateListingAvail(int lid, int availableFrom_new,int availableTo_new) throws SQLException{
+        String query;
+        try {
+            query = "UPDATE listing SET availableFrom = ?, availableTo = ? WHERE lid = ?";
+            PreparedStatement ps = this.conn.prepareStatement(query);
+            ps.setInt(1, availableFrom_new);
+            ps.setInt(2, availableTo_new);
+            ps.setInt(3, lid);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            throw new SQLException();
+        }
+
+    }
+
+    public ResultSet getListingFromCityType(String type, String city) throws SQLException {
+        String query =  "SELECT price,amenities FROM listing WHERE city = ? AND type = ?";
+        try {  
+            PreparedStatement ps = this.conn.prepareStatement(query);
+            ps.setString(1, city);
+            ps.setString(2,type);
+            return ps.executeQuery();
+        } catch (SQLException e){
+            
+            throw new SQLException();
+        }
+    }
+
+    public ResultSet reportListing1() throws Exception {
+        String query = "select count(*),country from listing group by country";
+        try {
+            PreparedStatement ps = this.conn.prepareStatement(query);
+            return ps.executeQuery();
+        } catch (Exception e) {
+            
+            throw new SQLException();
+        }
+    }
+
+    public ResultSet reportListing2() throws Exception {
+        String query = "select count(*),country,city from listing group by country,city";
+        try {
+            PreparedStatement ps = this.conn.prepareStatement(query);
+            return ps.executeQuery();
+        } catch (Exception e) {
+            
+            throw new SQLException();
+        }
+    }
+
+    public ResultSet reportListing3() throws Exception {
+        String query = "select count(*),country,city,postalCode from listing group by country,city,postalCode";
+        try {
+            PreparedStatement ps = this.conn.prepareStatement(query);
+            return ps.executeQuery();
+        } catch (Exception e) {
+            
+            throw new SQLException();
+        }
+    }
+
+    public ResultSet reportListing4() throws Exception {
+        String query = "select count(*),country,h_uid from listing group by country,h_uid order by count(*) DESC";
+        try {
+            PreparedStatement ps = this.conn.prepareStatement(query);
+            return ps.executeQuery();
+        } catch (Exception e) {
+            
+            throw new SQLException();
+        }
+    }
+
+    public ResultSet reportListing5() throws Exception {
+        String query = "select count(*),city,h_uid from listing group by city,h_uid order by count(*) DESC";
+        try {
+            PreparedStatement ps = this.conn.prepareStatement(query);
+            return ps.executeQuery();
+        } catch (Exception e) {
+            
+            throw new SQLException();
+        }
+    }
+
+    public ResultSet reportListing6() throws Exception {
+        String query = "select h_uid, count_huid, count_all, city_all, country_all from "+
+        "(select count(*) as count_huid,h_uid,city as city_huid, country as country_huid from listing group by city, country,h_uid) as temp2, " +
+        "(select count(*) as count_all, city as city_all, country as country_all from listing group by city, country) as temp1 "+
+        "where count_huid >= 0.1* count_all and city_huid = city_all and country_huid=country_all";
+        try {
+            PreparedStatement ps = this.conn.prepareStatement(query);
+            return ps.executeQuery();
+        } catch (Exception e) {
             e.printStackTrace();
             throw new SQLException();
         }
     }
 
+    // find bookings within intent rent time, used for creat a booking
+    public ResultSet getBookingWithin(int rentFrom, int rentTo) throws Exception {
+        String query = "select * from booking where (rentFrom<? AND rentFrom>?) OR (rentTo>? AND rentTo<?) OR (rentFrom<? AND rentTo>?)";
+        try {
+            PreparedStatement ps = this.conn.prepareStatement(query);
+            ps.setInt(1, rentTo);
+            ps.setInt(2, rentFrom);
+            ps.setInt(3, rentFrom);
+            ps.setInt(4, rentTo);
+            ps.setInt(5, rentFrom);
+            ps.setInt(6, rentTo);
+            return ps.executeQuery();
+        } catch (Exception e) {
+            throw new SQLException();
+        }
 
+    }
 
+    // outside new avail and not camceled, used for update avail
+    public ResultSet getBookingOutside(int availableFrom_new, int availableTo_new) throws Exception {
+        String query = "select * from booking where (rentFrom<? OR rentTo>?) AND canceledBy =-1";
+        try {
+            PreparedStatement ps = this.conn.prepareStatement(query);
+            ps.setInt(1, availableFrom_new);
+            ps.setInt(2, availableTo_new);
+            return ps.executeQuery();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new SQLException();
+        }
+    }
+
+    // not finished, not canceled, used for delete user
+    public ResultSet getBookingUnfinished(int todayDate_int, int uid, boolean isHost) throws Exception{
+        if (isHost) {
+            String query = "select * from booking where rentFrom<? AND canceledBy =-1 AND h_uid =?";
+            try {
+                PreparedStatement ps = this.conn.prepareStatement(query);
+                ps.setInt(1, todayDate_int);
+                ps.setInt(2, uid);
+                return ps.executeQuery();
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new SQLException();
+            }
+        }
+        else {
+            String query = "select * from booking where rentTo>? AND canceledBy =-1 AND r_uid =?";
+            try {
+                PreparedStatement ps = this.conn.prepareStatement(query);
+                ps.setInt(1, todayDate_int);
+                ps.setInt(2, uid);
+                return ps.executeQuery();
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new SQLException();
+            }
+        }
+
+    }
+
+    public ResultSet getBookingUnfinishedLid(int todayDate_int, int lid) throws Exception {
+        String query = "select * from booking where rentTo>? AND canceledBy =-1 AND lid =?";
+            try {
+                PreparedStatement ps = this.conn.prepareStatement(query);
+                ps.setInt(1, todayDate_int);
+                ps.setInt(2, lid);
+                return ps.executeQuery();
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new SQLException();
+            }
+    }
 }

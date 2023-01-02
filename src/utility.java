@@ -25,7 +25,7 @@ public class utility {
             }
             return listing_count;
         } catch (Exception e) {
-            e.printStackTrace();
+            
             throw e;
         }
         
@@ -50,7 +50,7 @@ public class utility {
             }
             return booking_count;
         } catch (Exception e) {
-            e.printStackTrace();
+            
             throw e;
         }
         
@@ -67,7 +67,7 @@ public class utility {
             }
             System.out.println("\n");
         } catch (Exception e) {
-            e.printStackTrace();
+            
             throw e;
         }
     }
@@ -84,7 +84,7 @@ public class utility {
             }
             System.out.println("\n");
         } catch (Exception e) {
-            e.printStackTrace();
+            
             throw e;
         }
     }
@@ -100,7 +100,7 @@ public class utility {
             }
             System.out.println("\n");
         } catch (Exception e) {
-            e.printStackTrace();
+            
             throw e;
         }
     }
@@ -118,7 +118,7 @@ public class utility {
             }
             System.out.println("\n");
         } catch (Exception e) {
-            e.printStackTrace();
+            
             throw e;
         }
     }
@@ -170,6 +170,106 @@ public class utility {
         return key;
     }
  
+
+    public static void printReportListing1(ResultSet rs) throws Exception {
+        System.out.println("1. total number of listings per country");
+        try {
+            while (rs.next()) {
+                System.out.printf("coutry: '%s', ", rs.getString("country"));
+                System.out.printf("count: %d, ", rs.getInt("count(*)"));
+                System.out.println("\n");
+            }
+            System.out.println("\n");
+        } catch (Exception e) {
+            
+            throw e;
+        }
+    }
+
+    public static void printReportListing2(ResultSet rs) throws Exception {
+        System.out.println("2. total number of listings per country and city");
+        try {
+            while (rs.next()) {
+                System.out.printf("coutry: '%s', ", rs.getString("country"));
+                System.out.printf("city: '%s', ", rs.getString("city"));
+                System.out.printf("count: %d, ", rs.getInt("count(*)"));
+                System.out.println("\n");
+            }
+            System.out.println("\n");
+        } catch (Exception e) {
+            
+            throw e;
+        }
+    }
+
+    public static void printReportListing3(ResultSet rs) throws Exception {
+        System.out.println("3. total number of listings per country, city and postalCode");
+        try {
+            while (rs.next()) {
+                System.out.printf("coutry: '%s', ", rs.getString("country"));
+                System.out.printf("city: '%s', ", rs.getString("city"));
+                System.out.printf("postalCode: '%s', ", rs.getString("postalCode"));
+                System.out.printf("count: %d, ", rs.getInt("count(*)"));
+                System.out.println("\n");
+            }
+            System.out.println("\n");
+        } catch (Exception e) {
+            
+            throw e;
+        }
+    }
+
+
+    public static void printReportListing4(ResultSet rs) throws Exception {
+        System.out.println("4. rank hosts by the total number of listings they have per country");
+        try {
+            while (rs.next()) {
+                System.out.printf("h_uid: %d, ", rs.getInt("h_uid"));
+                System.out.printf("coutry: '%s', ", rs.getString("country"));
+                System.out.printf("count: %d, ", rs.getInt("count(*)"));
+                System.out.println("\n");
+            }
+            System.out.println("\n");
+        } catch (Exception e) {
+            
+            throw e;
+        }
+    }
+
+    public static void printReportListing5(ResultSet rs) throws Exception {
+        System.out.println("5. rank hosts by the total number of listings they have per city");
+        try {
+            while (rs.next()) {
+                System.out.printf("h_uid: %d, ", rs.getInt("h_uid"));
+                System.out.printf("city: '%s', ", rs.getString("city"));
+                System.out.printf("count: %d, ", rs.getInt("count(*)"));
+                System.out.println("\n");
+            }
+            System.out.println("\n");
+        } catch (Exception e) {
+            
+            throw e;
+        }
+    }
+
+    public static void printReportListing6(ResultSet rs) throws Exception {
+        System.out.println("6. find hosts with a number of listings more than 10% total listings per city and country");
+        try {
+            while (rs.next()) {
+                System.out.printf("h_uid: %d, ", rs.getInt("h_uid"));
+                System.out.printf("h_uid listing count: %d, ", rs.getInt("count_huid"));
+                System.out.printf("total listing count: %d, ", rs.getInt("count_all"));
+                System.out.printf("city: %s, ", rs.getString("city_all"));
+                System.out.printf("country: %s, ", rs.getString("country_all"));
+                System.out.println("\n");
+            }
+            System.out.println("\n");
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
 }
 
 

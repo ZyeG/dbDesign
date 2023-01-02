@@ -57,14 +57,36 @@ public class MainMenu {
                     case10();
                     break;
                 case 11:
-                    System.out.println("Exit");
+                    case11();
                     break;
 
+                case 12:
+                    case12();
+                    break;
+
+                case 13:
+                    case13();
+                    break;
+
+                case 14:
+                    case14();
+                    break;
+                
+                case 15:
+                    case15();
+                    break;
+
+                case 16:
+                    case16();
+                    break;
+                case 17:
+                    System.out.println("Exit");
+                    break;
                 default:
                     System.out.println("Unknown action\n");
                     break;
             } 
-        } while(index!=11);
+        } while(index!=17);
     } 
 
            
@@ -77,13 +99,19 @@ public class MainMenu {
                 "1. user register\n" +
                 "2. user login\n" +
                 "3. user edit profile\n" +
-                "4. search listings and making bookings \n" +
+                "4. create a booking \n" +
                 "5. comment/rate on finished bookings \n" +
                 "6. cancel booking \n" +
                 "7. search listings with multiple filters \n" +
                 "8. report-booking\n" +
                 "9. user account delete\n" +
                 "10. report-listing-word cloud\n"+
+                "11. create listing\n" +
+                "12. update listing price\n"+
+                "13. update listing availability\n"+
+                "14. host toolkit(suggest price and amenities given city and type)\n"+
+                "15. report-listing\n"+
+                "16. delete listing\n"+
                 "--------------------------------------------\n" +
                 "Please select a number for the menu option:\n");
     }
@@ -152,7 +180,7 @@ public class MainMenu {
     // cancel booking
     private static void case6(){
         try {
-            handler.cancelBooking(scan,uid);
+            handler.cancelBooking(scan,uid,isHost);
             System.out.println("cancel booking success");
         } catch (Exception e) {
             System.out.println("error" +"  "+e.getMessage());
@@ -183,6 +211,7 @@ public class MainMenu {
     private static void case9(){
         try {
             handler.deleteUser(uid,isHost);
+            System.out.print("delete account success");
         } catch (Exception e) {
             System.out.println("error" +"  "+e.getMessage());
         }
@@ -196,4 +225,64 @@ public class MainMenu {
             System.out.println("error" +"  "+e.getMessage());
         }
     }
+
+    // create listing
+    private static void case11(){
+        try {
+            handler.createListing(scan, uid, isHost);
+            System.out.println("create listing success");
+        } catch(Exception e) {
+            System.out.println("error" +"  "+e.getMessage());
+        }
+    }
+
+    // update listing price
+    private static void case12() {
+        try {
+            handler.updateListingPrice(scan, uid, isHost);
+            System.out.println("update price success");
+        } catch(Exception e) {
+            System.out.println("error" +"  "+e.getMessage());
+        }
+    }
+
+    // update listing avail
+    private static void case13() {
+        try {
+            handler.updateListingAvail(scan, uid, isHost);
+            System.out.println("update availability success");
+        } catch(Exception e) {
+            System.out.println("error" +"  "+e.getMessage());
+        }
+    }
+
+    // toolkit
+    private static void case14() {
+        try {
+            handler.toolkit(scan, isHost);
+        } catch(Exception e) {
+            System.out.println("error" +"  "+e.getMessage());
+        }
+    }
+
+    // report-booking
+    private static void case15() {
+        try {
+            handler.reportListing();
+        } catch(Exception e) {
+            System.out.println("error" +"  "+e.getMessage());
+        }
+    }
+
+    // delete listing
+    private static void case16() {
+        try {
+            handler.deleteListing(scan,isHost, uid);
+            System.out.println("delete listing success");
+        } catch(Exception e) {
+            System.out.println("error" +"  "+e.getMessage());
+        }
+    }
+
+    
 }

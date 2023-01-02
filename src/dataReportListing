@@ -1,0 +1,24 @@
+INSERT INTO listing (h_uid, type, latitude, longitude, country, city, postalCode, address, amenities, price, availableFrom, availableTo, bookedWindows) 
+VALUES (1, 'fullHouse', 48.44, -123.33, 'ca', 'victoria', 'V8P1A1', '495 Dupplin Rd #2b',"ac,tv", 90,20220101,20220131,'[[20220103,20220109]]');
+
+INSERT INTO listing (h_uid, type, latitude, longitude, country, city, postalCode, address, amenities, price, availableFrom, availableTo, bookedWindows) 
+VALUES (1, "fullHouse", 43.77, -79.25, "ca", "toronto", "M1P4P5", "300 Borough Dr", "ac,wifi", 160, 20220801, 20220831, JSON_ARRAY());
+
+INSERT INTO listing (h_uid, type, latitude, longitude, country, city, postalCode, address, amenities, price, availableFrom, availableTo, bookedWindows) 
+VALUES (1, "fullHouse", 43.66, -79.38, "ca", "toronto", "M5G2C8", "777 Bay Street", 'ac', 200, 20220101, 20220131, JSON_ARRAY(JSON_ARRAY(20220103,20220109)));
+
+INSERT INTO listing (h_uid, type, latitude, longitude, country, city, postalCode, address, amenities, price, availableFrom, availableTo, bookedWindows) 
+VALUES (1, "fullHouse", 43.78, -79.18, "ca", "toronto", "M1C3A8", "1295 Military Trail", "wifi", 120, 20220801, 20220831 ,JSON_ARRAY(JSON_ARRAY(20220805,20220809), JSON_ARRAY(20220810,20220812)));
+
+INSERT INTO listing (h_uid, type, latitude, longitude, country, city, postalCode, address, amenities, price, availableFrom, availableTo, bookedWindows) 
+VALUES (2, 'room', 43.78, -79.18, 'ca', 'toronto', 'M1C3A8', '1295 Military Trail', 'washer/dryer', 150, 20220501, 20220531, JSON_ARRAY(JSON_ARRAY(20220120,20220124)));
+
+INSERT INTO listing (h_uid, type, latitude, longitude, country, city, postalCode, address, amenities, price, availableFrom, availableTo, bookedWindows) 
+VALUES (2, 'room', 48.44, -123.33, 'ca', 'victoria', 'V8R2Y5', '1500 Holly St', 'pool', 150, 20220801, 20220831, JSON_ARRAY(JSON_ARRAY(20220820,20220824)));
+
+INSERT INTO listing (h_uid, type, latitude, longitude, country, city, postalCode, address, amenities, price, availableFrom, availableTo, bookedWindows) 
+VALUES (2, 'room', 45.60, -122.73, 'us', 'ny', '10027', '500 Riverside Dr', 'pool', 150, 20220801, 20220831, JSON_ARRAY(JSON_ARRAY(20220820,20220824)));
+
+
+
+

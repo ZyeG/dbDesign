@@ -85,3 +85,39 @@ VALUES (2, 'room', 43.78, -79.18, 'ca', 'toronto', 'M1C3A8', '1295 Military Trai
 INSERT INTO listing (h_uid, type, latitude, longitude, country, city, postalCode, address, amenities, price, availableFrom, availableTo, bookedWindows) 
 VALUES (2, 'room', 48.44, -123.33, 'ca', 'victoria', 'V8R2Y5', '1500 Holly St', 'pool', 150, 20220101, 20220131, '[[20220105,20220509]]');
 
+
+
+
+the total number of listings per country, per country and city as well as per country, city and postal code.
+select count(*),country from listing group by country
+select count(*),coutry, city from listing group by country, city
+select count(*),coutry, city, postalCode from listing group by country, city, postalCode
+
+
+rank the hosts by the total number of listings they have
+overall per country, but also be able to refine this reporting for the hosts
+based on the number of listings they have by city.
+select count(*), coutry, h_uid from listing group by country, h_uid order by count(*)
+select count(*), coutry,city,h_uid from listing group by country, city, h_uid order by count(*)
+
+
+
+
+For every city and country a report should provide the hosts that have a
+number of listings that is more than 10% of the number of listings in that
+city and country.
+select h_uid as huid from listing group by country, city,h_uid having count(*) > 0.1 * (select count(*) from listing group by country, city where h_uid = huid)
+
+
+select * from booking where (rentFrom<20220805 OR rentTo>20220810) AND canceledBy = -1
+
+select * from booking where rentFrom<20220808 AND canceledBy =-1 AND r_uid =2
+
+
+
+For every city and country a report should provide the hosts that have a
+number of listings that is more than 10% of the number of listings in that city and country ; 
+
+
+
+2 the hosts and renters with the largest number of s within a year 

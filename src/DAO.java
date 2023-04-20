@@ -14,7 +14,7 @@ public class DAO {
 			this.conn = DriverManager.getConnection(url, "root", "cscc43s2022");
 		} 
 		catch (Exception e) {
-			
+			System.out.print(e);
 		}
 	}
 

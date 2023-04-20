@@ -1,6 +1,6 @@
 ## Dev Env Setup
 
-# MySQL Server
+### MySQL Server
 - Install the MySQL community server according to your operating system(http://dev.mysql.com/downloads/mysql)
 
 - Start MySQL service (Optional)
@@ -29,7 +29,7 @@ which our command will be issued]
 run mysql server
 [load sample data]
 
-# add library: mysql-connector-java-8.0.29.jar
+### add library: mysql-connector-java-8.0.29.jar
 > reference: https://www.youtube.com/watch?v=MtME-ERufu0
 ## Getting Started
 

@@ -1,3 +1,23 @@
+## Overview
+This project designs a relational database, and backend implementations for supporting the operations of the a home sharing service platform (e.g. AirBnB).
+
+### db Design
+#### Relation Schema
+- user(uid, name, email, password, birth, occupation, SIN, cardNumber, cardExpirationDate, CVV, isHost)
+- listing(lid, h_uid, type, latitude, longitude, country, city, postalCode, address, amenities, price, availableFrom, availableTo)
+- booking(bid, lid, r_uid, h_uid, rentFrom, rentTo, price, commentByHost, commentByRenter, rateByHost, rateByRenter, canceledBy)
+
+#### Entity Relationship Diagram
+![ER diagram](er_diagram.png)
+*Primary keys are underlined
+
+### backend features 
+ 4 categories of features are supported, see User Manual in docs.pdf for details.
+- operations (e.g. add listing, create account, etc.)
+- db queries (e.g. search listing)
+- report generation (e.g. report hosts and renters with the largest #cancellations within a year)
+- Host toolkit (e.g. suggesting price, amentities when creating listing)
+
 ## Dev Env Setup
 
 ### MySQL Server
